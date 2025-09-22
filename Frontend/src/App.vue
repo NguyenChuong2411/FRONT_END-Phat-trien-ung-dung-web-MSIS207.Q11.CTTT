@@ -1,85 +1,82 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView } from 'vue-router'
+import NavigationBar from './components/NavigationBar.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <!-- Navigation Bar -->
+  <NavigationBar />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <!-- Main Content -->
+  <main class="main-content">
+    <RouterView />
+  </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<style>
+/* Global styles for full-width layout */
+body {
+  margin: 0;
+  padding: 0;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+#app {
+  margin: 0;
+  padding: 0;
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.main-content {
+  padding-top: 80px; /* Add space for fixed navigation bar */
+  min-height: calc(100vh - 80px);
+}
+</style>
+
+<style scoped>
+.main-content {
+  min-height: 100vh;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+/* Global styles for the app */
+:global(body) {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #1f2937;
+  background-color: #ffffff;
 }
 
-nav a {
-  display: inline-block;
+:global(*) {
+  box-sizing: border-box;
+}
+
+:global(h1, h2, h3, h4, h5, h6) {
+  margin: 0;
+  font-weight: 600;
+}
+
+:global(p) {
+  margin: 0 0 1rem 0;
+}
+
+:global(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+:global(button) {
+  font-family: inherit;
+}
+
+:global(.container) {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
 }
 
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+@media (min-width: 768px) {
+  :global(.container) {
+    padding: 0 2rem;
   }
 }
 </style>
