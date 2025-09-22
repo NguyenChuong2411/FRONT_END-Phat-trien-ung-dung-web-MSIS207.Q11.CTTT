@@ -1,0 +1,100 @@
+.about-page {
+  min-height: 100vh;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.page-title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.page-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+.about-content {
+  padding: 4rem 2rem;
+  width: 100%;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.text-content h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #1f2937;
+}
+
+.text-content p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.about-image {
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.mission-vision {
+  background-color: #f9fafb;
+  padding: 4rem 2rem;
+}
+
+.mv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.mv-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.mv-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #4f46e5;
+}
+
+.mv-card p {
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .content-grid,
+  .mv-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+}
