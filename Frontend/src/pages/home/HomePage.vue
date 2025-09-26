@@ -24,13 +24,9 @@
 
     <!-- Welcome Section -->
     <section class="wel-section">
-      <div class="wel-background">
-        <!-- <img src="@/images/1_homepage/sapo-deco2.png" alt="Background1" class="bg-overlay" /> -->
-        
+      <div class="wel-background">        
         <img src="@/images/1_homepage/sapo-bg.png" alt="Background" class="bg-image" />
         <img src="@/images/1_homepage/sapo-deco2.png" alt="Background1" class="bg-image-footer" />
-
-        <!-- <div class="bg-overlay"></div> -->
       </div>
       <div class="wel-content">
         <div class="wel-image">
@@ -70,11 +66,11 @@
         <div class="reason-grid">
           <div class="reason-item">
             <div class="reason-image">
-              <img src="@/images/1_homepage/_kỹ năng toàn diện.png" alt="Tiếng Anh trải nghiệm" />
+              <img src="@/images/1_homepage/_trải nghiệm.png" alt="Tiếng Anh trải nghiệm" />
             </div>
             <h3 class="reason-item-title">Tiếng Anh trải nghiệm</h3>
             <p class="reason-item-desc">
-              Khác với cách đào tạo truyền thống với hơn một thập kỷ đào tạo, Enly tự hào là đơn vị duy nhất mang chí tập trung vào đánh giá cuối kỳ, Enly có lộ trình áp dụng xuyên suốt đánh giá, theo dõi học sinh liên tục, cá nhân hóa theo nhu các chương trình tiếng Anh của ta trong lúc với mục tiêu dịch, giúp học sinh đạt kết quả đầu ra cao, nền tảng cho các bước phát triển học tập và sự nghiệp.
+              Enly có lộ trình áp dụng xuyên suốt đánh giá, theo dõi học sinh liên tục, cá nhân hóa theo nhu các chương trình tiếng Anh của ta trong lúc với mục tiêu dịch, giúp học sinh đạt kết quả đầu ra cao, nền tảng cho các bước phát triển học tập và sự nghiệp.
             </p>
           </div>
           <div class="reason-item">
@@ -88,25 +84,53 @@
           </div>
           <div class="reason-item">
             <div class="reason-image">
-              <img src="@/images/1_homepage/_Phát triển toàn diện.png" alt="Phát triển tư duy kỹ năng toàn diện" />
+              <img src="@/images/1_homepage/_kỹ năng toàn diện.png" alt="Phát triển tư duy kỹ năng toàn diện" />
             </div>
             <h3 class="reason-item-title">Phát triển tư duy kỹ năng toàn diện</h3>
             <p class="reason-item-desc">
               Với phương châm, cùng với tiến ra thế giới, chúng tôi coi tiếng Anh là công cụ giúp học viên, thông qua việc học tiếng Anh, có thể phát triển tư duy và kỹ năng một cách toàn diện.
             </p>
           </div>
-          <div class="reason-image">
-              <img src="@/images/1_homepage/_kỹ năng toàn diện.png" alt="Cá nhân hóa" />
+          <div class="reason-item">
+            <div class="reason-image">
+              <img src="@/images/1_homepage/Cá nhân hóa.png" alt="Phát triển tư duy kỹ năng toàn diện" />
             </div>
-            <h3 class="reason-item-title">Cá nhân hóa</h3>
+            <h3 class="reason-item-title">Phát triển tư duy kỹ năng toàn diện</h3>
             <p class="reason-item-desc">
-              Khác với cách đào tạo truyền thống với hơn một thập kỷ đào tạo, Enly tự hào là đơn vị duy nhất mang chí tập trung vào đánh giá cuối kỳ, Enly có lộ trình áp dụng xuyên suốt đánh giá, theo dõi học sinh liên tục, cá nhân hóa theo nhu các chương trình tiếng Anh của ta trong lúc với mục tiêu dịch, giúp học sinh đạt kết quả đầu ra cao, nền tảng cho các bước phát triển học tập và sự nghiệp.
+              Với phương châm, cùng với tiến ra thế giới, chúng tôi coi tiếng Anh là công cụ giúp học viên, thông qua việc học tiếng Anh, có thể phát triển tư duy và kỹ năng một cách toàn diện.
             </p>
+          </div>  
         </div>
       </div>
     </section>
 
-
+    <!-- Trial Section -->
+    <section class="trial-section">
+      <div class="trial-bg">
+        <img src="@/images/1_homepage/home-dk-bg.png" alt="Trial Background" class="trial-bg-img" />
+      </div>
+      <div class="trial-content">
+        <div class="trial-left">
+          <div class="trial-title">Đăng ký học thử<br>và kiểm tra trình độ</div>
+          <div class="trial-subtitle">(Chương trình dành riêng cho học viên từ 3 - 17 tuổi)</div>
+          <div class="trial-human-img">
+            <img src="@/images/1_homepage/_và kiểm tra trình độ.png" alt="Trial Human" />
+          </div>
+        </div>
+        <form class="trial-form">
+          <input type="text" placeholder="Họ và tên học sinh *" required />
+          <input type="text" placeholder="Độ tuổi *" required />
+          <input type="text" placeholder="Số điện thoại phụ huynh *" required />
+          <input type="text" placeholder="Nơi ở" />
+          <select required>
+            <option value="">Địa điểm học *</option>
+            <option value="enly1">Enly Cơ sở 1</option>
+            <option value="enly2">Enly Cơ sở 2</option>
+          </select>
+          <button type="submit">Gửi</button>
+        </form>
+      </div>
+    </section>
 
     <!-- Features Section -->
     <section class="features-section">
