@@ -4,7 +4,6 @@
     <div class="nav-logo">
       <router-link to="/" class="logo-link">
         <img src="@/assets/logo.svg" alt="Enly Logo" class="logo-image" />
-        <span class="logo-text">enly</span>
       </router-link>
     </div>
 

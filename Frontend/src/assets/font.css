@@ -1,0 +1,14 @@
+/* Khai báo font UTM Bryant LG */
+@font-face {
+    font-family: 'UTM Bryant LG';
+    src: url('./fonts/UTM BRYANTLG.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'UTM Bryant LG';
+    src: url('./fonts/00048-UTM-BRYANTLG.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
