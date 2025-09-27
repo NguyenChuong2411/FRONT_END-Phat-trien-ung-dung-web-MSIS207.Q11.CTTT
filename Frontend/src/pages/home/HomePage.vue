@@ -114,11 +114,12 @@
           <div class="trial-title">Đăng ký học thử<br>và kiểm tra trình độ</div>
           <div class="trial-subtitle">(Chương trình dành riêng cho học viên từ 3 - 17 tuổi)</div>
           <div class="trial-human-img">
-            <img src="@/images/1_homepage/_và kiểm tra trình độ.png" alt="Trial Human" />
+            <img src="@/images/1_homepage/_và kiểm tra trình độ.png" alt="Trial Human" class="trial-human-img"/>
           </div>
         </div>
         <form class="trial-form">
-          <input type="text" placeholder="Họ và tên học sinh *" required />
+          
+          <input type="text" color="#F6871F" placeholder="Họ và tên học sinh *" required />
           <input type="text" placeholder="Độ tuổi *" required />
           <input type="text" placeholder="Số điện thoại phụ huynh *" required />
           <input type="text" placeholder="Nơi ở" />

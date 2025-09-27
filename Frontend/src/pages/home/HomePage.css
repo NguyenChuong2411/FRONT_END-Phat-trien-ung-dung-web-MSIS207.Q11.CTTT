@@ -639,16 +639,6 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-}
-
-.img-section img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* lấp đầy section, cắt bớt nếu dư */
-}
-
-/* Trial Section */
-.trial-section {
   position: relative;
   width: 100%;
   min-height: 600px;
@@ -657,6 +647,12 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.img-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* lấp đầy section, cắt bớt nếu dư */
 }
 
 .trial-bg {
@@ -677,14 +673,14 @@
 .trial-content {
   position: relative;
   z-index: 2;
-  width: 100%;
+  width: 80%;
   max-width: 1300px;
   margin: auto;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6rem;
+  gap:6rem;
   padding: 0 2rem;
   min-height: 600px;
 }
@@ -711,7 +707,10 @@
   opacity: 0.85;
 }
 .trial-human-img {
-  margin-top: 2rem;
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .trial-human-img img {
   width: 500px;
@@ -729,10 +728,11 @@
   padding: 2.5rem 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
   min-width: 340px;
   max-width: 370px;
-  margin-left: 2rem;
+  margin-right: 1.5rem;
+  margin-bottom: 1rem;
   align-items: stretch;
 }
 .trial-form input,
@@ -742,9 +742,13 @@
   border: none;
   font-size: 1.1rem;
   background: #f7faff;
-  color: #333;
+  color: #F6871F;
   outline: none;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.trial-form input::placeholder {
+  color: #F6871F;
+  opacity: 1;
 }
 .trial-form input:focus,
 .trial-form select:focus {
@@ -779,6 +783,7 @@
   .trial-form {
     margin-left: 0;
     margin-top: 2rem;
+  
   }
   .trial-left {
     align-items: center;
