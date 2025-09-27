@@ -107,19 +107,22 @@
     <!-- Trial Section -->
     <section class="trial-section">
       <div class="trial-bg">
+
         <img src="@/images/1_homepage/home-dk-bg.png" alt="Trial Background" class="trial-bg-img" />
       </div>
       <div class="trial-content">
         <div class="trial-left">
-          <div class="trial-title">Đăng ký học thử<br>và kiểm tra trình độ</div>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="trial-title">Đăng ký học thử<br>và kiểm tra trình độ</div>
+            <img src="@/images/1_homepage/Frame.png" alt="Frame Decoration" class="trial-frame-deco" style="height: 90px; width: auto;" />
+          </div>
           <div class="trial-subtitle">(Chương trình dành riêng cho học viên từ 3 - 17 tuổi)</div>
           <div class="trial-human-img">
             <img src="@/images/1_homepage/_và kiểm tra trình độ.png" alt="Trial Human" class="trial-human-img"/>
           </div>
         </div>
         <form class="trial-form">
-          
-          <input type="text" color="#F6871F" placeholder="Họ và tên học sinh *" required />
+          <input type="text" placeholder="Họ và tên học sinh *" required />
           <input type="text" placeholder="Độ tuổi *" required />
           <input type="text" placeholder="Số điện thoại phụ huynh *" required />
           <input type="text" placeholder="Nơi ở" />
@@ -131,40 +134,30 @@
           <button type="submit">Gửi</button>
         </form>
       </div>
+      
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section">
-      <div class="container">
-        <h2 class="section-title">Tại sao chọn Enly?</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">🎯</div>
-            <h3>Luyện thi chuyên nghiệp</h3>
-            <p>Hệ thống luyện thi online với đề thi chuẩn quốc tế</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">👨‍🏫</div>
-            <h3>Giáo viên native</h3>
-            <p>Đội ngũ giáo viên bản ngữ giàu kinh nghiệm</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <h3>Học mọi lúc mọi nơi</h3>
-            <p>Nền tảng học trực tuyến hiện đại, dễ sử dụng</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <div class="container">
-        <h2>Chào mừng bạn</h2>
-        <p>Bắt đầu hành trình học tiếng Anh cùng Enly ngay hôm nay</p>
-        <router-link to="/about" class="btn btn-primary">Tìm hiểu về Enly</router-link>
-      </div>
-    </section>
+<!-- Shared Section -->
+ <section class="shared-section">
+  <div class="container">
+    <h1 class="shared-title">
+        Chia sẻ
+    </h1>
+    <h2 class="shared-subtitle">
+        của Phụ huynh & học sinh
+    </h2>
+    <div class="shared-content">
+      <img src="@/images/1_homepage/Bạn Đức Tài.png" alt="Bạn Đức Tài" class="shared-img">
+      <p class="shared-text">
+        <span class="shared-highlight"> Bạn Đức Tài </span>
+        <span class="shared-highlight-1"> - 8 tuổi </span>  
+        <br></br>
+        <br></br>
+      Talky giúp em có nhiều bạn mới. Chúng em thường  học nhóm và chia sẻ kinh nghiệm học tập với nhau. Các  bạn rất vui vẻ và hòa đồng. Chúng em còn cùng nhau chơi  đá bóng ở sân chơi chung mỗi giờ giải lao nữa. Mỗi khi đến  lịch học em rất vui vì lại sắp được gặp các bạn.
+      </p> 
+    </div>
+  </div>
+ </section>
   </div>
 </template>
 
