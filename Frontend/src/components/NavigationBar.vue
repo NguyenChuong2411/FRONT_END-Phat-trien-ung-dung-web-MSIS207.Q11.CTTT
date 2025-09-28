@@ -104,6 +104,10 @@ const closeMobileMenu = () => {
 }
 
 const isActiveRoute = (path) => {
+  // Special case for online-test routes
+  if (path === '/online-test') {
+    return route.path === '/online-test' || route.path.startsWith('/online-test/')
+  }
   return route.path === path
 }
 </script>
