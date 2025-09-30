@@ -34,9 +34,9 @@ const router = createRouter({
       component: () => import('../pages/sharing/SharingPage.vue'),
     },
     {
-      path: '/recruitment',
-      name: 'recruitment',
-      component: () => import('../pages/recruitment/RecruitmentPage.vue'),
+      path: '/flashcard',
+      name: 'flashcard',
+      component: () => import('../pages/flashcard/FlashcardPage.vue'),
     },
     {
       path: '/contact',

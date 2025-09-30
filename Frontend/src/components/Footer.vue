@@ -18,7 +18,7 @@
         <div class="footer-columns">
           <!-- Contact Info 1 -->
           <div class="footer-column">
-            <h3 class="footer-column-title">Tìm hiểu thêm</h3>
+            <h3 class="footer-column-title">Địa chỉ chi nhánh</h3>
             <div class="contact-info">
               <h4 class="contact-branch">Enly Đống Đa</h4>
               <div class="contact-item">
@@ -42,47 +42,8 @@
                 <span class="contact-text">0901699488</span>
               </div>
             </div>
-
-            <div class="contact-info">
-              <h4 class="contact-branch">Enly Hà Đông</h4>
-              <div class="contact-item">
-                <span class="contact-icon">📍</span>
-                <span class="contact-text">220 Quang Trung, Hà Đông, Hà Nội</span>
-              </div>
-              <div class="contact-item">
-                <span class="contact-icon">📞</span>
-                <span class="contact-text">0966753488</span>
-              </div>
-            </div>
           </div>
 
-          <!-- Contact Info 2 -->
-          <div class="footer-column">
-            <h3 class="footer-column-title">Tìm hiểu thêm</h3>
-            <div class="contact-info">
-              <h4 class="contact-branch">Enly Cầu Giấy</h4>
-              <div class="contact-item">
-                <span class="contact-icon">📍</span>
-                <span class="contact-text">136 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</span>
-              </div>
-              <div class="contact-item">
-                <span class="contact-icon">📞</span>
-                <span class="contact-text">0986631488</span>
-              </div>
-            </div>
-
-            <div class="contact-info">
-              <h4 class="contact-branch">Enly Thương Tín</h4>
-              <div class="contact-item">
-                <span class="contact-icon">📍</span>
-                <span class="contact-text">36 Nguyễn Văn Trỗi, Thương Tín, Hà Nội</span>
-              </div>
-              <div class="contact-item">
-                <span class="contact-icon">📞</span>
-                <span class="contact-text">0586630999</span>
-              </div>
-            </div>
-          </div>
 
           <!-- Links Column -->
           <div class="footer-column">
@@ -90,7 +51,6 @@
             <ul class="footer-links">
               <li><router-link to="/about" class="footer-link">Về Enly</router-link></li>
               <li><router-link to="/news" class="footer-link">Tin tức</router-link></li>
-              <li><router-link to="/recruitment" class="footer-link">Tuyển dụng</router-link></li>
               <li><router-link to="/contact" class="footer-link">Liên hệ</router-link></li>
             </ul>
           </div>
@@ -115,10 +75,10 @@
                   ➤
                 </button>
               </div>
-              <div class="trust-badge">
+              <!-- <div class="trust-badge">
                 <div class="trust-icon">✓</div>
                 <span class="trust-text">Đã thông báo<br/>Bộ Công Thương</span>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -165,24 +125,13 @@ const subscribeNewsletter = () => {
 .footer {
   background: linear-gradient(135deg, #4C63D2 0%, #2D4AA7 50%, #1E3A8A 100%);
   color: white;
-  padding: 60px 0 40px;
+  padding: 60px 0 20px;
   position: relative;
   overflow: hidden;
 }
 
-.footer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z" fill="%23ffffff" opacity="0.1"/></svg>') no-repeat center top;
-  background-size: cover;
-}
-
 .footer-container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 20px;
   position: relative;
@@ -193,14 +142,13 @@ const subscribeNewsletter = () => {
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
-  margin-bottom: 40px;
 }
 
 .footer-logo-section {
   flex: 0 0 250px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 20px;
 }
 
@@ -359,7 +307,7 @@ const subscribeNewsletter = () => {
   cursor: not-allowed;
 }
 
-.trust-badge {
+/* .trust-badge {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -386,7 +334,7 @@ const subscribeNewsletter = () => {
   font-size: 12px;
   line-height: 1.3;
   opacity: 0.9;
-}
+} */
 
 .footer-social {
   text-align: center;

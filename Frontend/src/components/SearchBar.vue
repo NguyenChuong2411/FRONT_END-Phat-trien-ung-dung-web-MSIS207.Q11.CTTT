@@ -84,17 +84,19 @@ const handleSearch = () => {
 
 <style scoped>
 .search-bar-container {
-  background: white;
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 1.5rem;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
 }
 
 .search-tabs {
   display: flex;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .search-tab {
@@ -102,22 +104,21 @@ const handleSearch = () => {
   padding: 0.875rem 1rem;
   border: none;
   background: transparent;
-  color: #64748b;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
 }
 
 .search-tab:hover {
-  background-color: #f1f5f9;
-  color: #475569;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .search-tab.active {
-  background-color: #3b82f6;
   color: white;
-  border-bottom-color: #1d4ed8;
+  border-bottom-color: white;
 }
 
 .search-input-container {
@@ -133,40 +134,45 @@ const handleSearch = () => {
 .search-input {
   flex: 1;
   padding: 0.875rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 0.5rem;
   font-size: 1rem;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
   outline: none;
+  background: transparent;
+  color: white;
 }
 
 .search-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
 }
 
 .search-input::placeholder {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .search-btn {
   padding: 0.875rem 2rem;
-  background-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   color: white;
   border: none;
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .search-btn:hover {
-  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
 }
 
 .search-btn:active {
-  background-color: #1d4ed8;
+  transform: translateY(0);
+  background: linear-gradient(135deg, #4c7de6, #2563eb);
 }
 
 /* Responsive design */
