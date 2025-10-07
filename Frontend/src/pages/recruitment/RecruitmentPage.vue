@@ -109,7 +109,6 @@
 </template>
 
 <script setup>
-import './RecruitmentPage.css'
 import { ref, computed, onMounted } from 'vue'
 
 // Reactive data
@@ -222,3 +221,5 @@ onMounted(() => {
   console.log('Recruitment page loaded')
 })
 </script>
+
+<style src="./RecruitmentPage.css" scoped></style>

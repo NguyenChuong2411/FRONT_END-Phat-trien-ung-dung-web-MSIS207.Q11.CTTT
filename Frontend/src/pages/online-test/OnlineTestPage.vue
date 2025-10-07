@@ -114,7 +114,6 @@
 </template>
 
 <script setup>
-import './OnlineTestPage.css'
 import '../../assets/box-list.css'
 import SearchBar from '../../components/SearchBar.vue'
 import Pagination from '../../components/Pagination.vue'
@@ -400,3 +399,5 @@ onMounted(() => {
   console.log('Online Test page loaded')
 })
 </script>
+
+<style src="./OnlineTestPage.css" scoped></style>
