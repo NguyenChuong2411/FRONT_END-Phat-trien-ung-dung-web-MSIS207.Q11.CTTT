@@ -84,7 +84,6 @@
 </template>
 
 <script setup>
-import './FlashcardPage.css'
 import { ref, computed, onMounted } from 'vue'
 
 // User statistics
@@ -163,3 +162,5 @@ onMounted(() => {
   console.log('Flashcard page loaded')
 })
 </script>
+
+<style src="./FlashcardPage.css" scoped></style>

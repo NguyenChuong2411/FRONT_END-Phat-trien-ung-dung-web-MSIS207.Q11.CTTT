@@ -167,7 +167,6 @@
 </template>
 
 <script setup>
-import './ContactPage.css'
 import { ref, reactive, onMounted } from 'vue'
 
 // Reactive data
@@ -218,3 +217,5 @@ onMounted(() => {
   console.log('Contact page loaded')
 })
 </script>
+
+<style src="./ContactPage.css" scoped></style>

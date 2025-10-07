@@ -238,12 +238,13 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import './HomePage.css'
 
 // Component logic
 onMounted(() => {
   console.log('Home page loaded')
 })
 </script>
+
+<style src="./HomePage.css" scoped></style>
 
 
