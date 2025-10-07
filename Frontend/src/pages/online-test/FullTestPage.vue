@@ -3,7 +3,10 @@
     <!-- Test Header -->
     <div class="test-header">
       <div class="test-info">
-        <h1 class="test-title">{{ testTitle }}</h1>
+        <h1 class="test-title">
+          {{ testTitle }}
+          <span v-if="testMode === 'practice'" class="practice-mode-badge">- Chế độ luyện tập</span>
+        </h1>
         <button class="exit-btn" @click="showExitConfirm = true">
           Thoát
         </button>
@@ -120,10 +123,11 @@
       <!-- Right Panel - Timer & Navigation -->
       <div class="timer-nav-panel">
         <!-- Timer -->
-        <div class="timer-section">
-          <div class="timer-label">Thời gian còn lại</div>
-          <div class="timer-display">{{ formatTime(timeRemaining) }}</div>
-          <button class="hide-timer-btn" @click="toggleTimer">
+        <div class="timer-section" v-if="timeRemaining > 0 || testMode === 'fulltest'">
+          <div class="timer-label">{{ testMode === 'practice' && timeRemaining === 0 ? 'Không giới hạn thời gian' : 'Thời gian còn lại' }}</div>
+          <div class="timer-display" v-if="timeRemaining > 0">{{ formatTime(timeRemaining) }}</div>
+          <div class="timer-display" v-else>∞</div>
+          <button class="hide-timer-btn" @click="toggleTimer" v-if="timeRemaining > 0">
             {{ showTimer ? 'Ẩn bài' : 'Hiện bài' }}
           </button>
         </div>
@@ -192,19 +196,21 @@ const router = useRouter()
 // Props from route params
 const testId = route.params.testId
 const testMode = route.query.mode || 'fulltest'
+const selectedSectionIds = route.query.sections ? route.query.sections.split(',') : []
+const customTimeLimit = route.query.timeLimit || null
 
 // State
-const testTitle = ref('IELTS Simulation Reading test 1')
+const testTitle = ref(route.query.title || 'IELTS Simulation Reading test 1')
 const activePassage = ref('passage1')
 const currentQuestionId = ref('p1q1')
 const selectedAnswers = ref({})
-const timeRemaining = ref(3600) // 60 minutes in seconds
+const timeRemaining = ref(3600) // 60 minutes in seconds - will be updated based on mode
 const showTimer = ref(true)
 const showExitConfirm = ref(false)
 const showSubmitConfirm = ref(false)
 
-// Test data (mock - replace with API call)
-const passages = [
+// All available passages data (mock - replace with API call)
+const allPassages = [
   {
     id: 'passage1',
     name: 'Passage 1',
@@ -234,8 +240,16 @@ const passages = [
   }
 ]
 
-// Mock questions data - organized by passages
-const questionsData = {
+// Filter passages based on mode and selected sections
+const passages = computed(() => {
+  if (testMode === 'practice' && selectedSectionIds.length > 0) {
+    return allPassages.filter(passage => selectedSectionIds.includes(passage.id))
+  }
+  return allPassages
+})
+
+// All questions data - organized by passages
+const allQuestionsData = {
   passage1: [
     {
       id: 'p1q1',
@@ -314,13 +328,27 @@ const questionsData = {
   ]
 }
 
+// Filter questions based on available passages
+const questionsData = computed(() => {
+  if (testMode === 'practice' && selectedSectionIds.length > 0) {
+    const filtered = {}
+    selectedSectionIds.forEach(id => {
+      if (allQuestionsData[id]) {
+        filtered[id] = allQuestionsData[id]
+      }
+    })
+    return filtered
+  }
+  return allQuestionsData
+})
+
 // Computed properties
 const currentPassage = computed(() => {
-  return passages.find(p => p.id === activePassage.value) || passages[0]
+  return passages.value.find(p => p.id === activePassage.value) || passages.value[0]
 })
 
 const currentPassageQuestions = computed(() => {
-  return questionsData[activePassage.value] || []
+  return questionsData.value[activePassage.value] || []
 })
 
 const currentPassageQuestionRange = computed(() => {
@@ -333,7 +361,7 @@ const currentPassageQuestionRange = computed(() => {
 })
 
 const allQuestions = computed(() => {
-  return Object.values(questionsData).flat()
+  return Object.values(questionsData.value).flat()
 })
 
 const totalQuestions = computed(() => {
@@ -377,7 +405,7 @@ const saveAnswer = (questionId, answer) => {
 
 const getQuestionClass = (passageId, questionNum) => {
   // Find the actual question to get its ID
-  const passageQuestions = questionsData[passageId] || []
+  const passageQuestions = questionsData.value[passageId] || []
   const question = passageQuestions.find(q => q.number === questionNum)
   
   if (!question) return { unanswered: true }
@@ -428,6 +456,9 @@ const submitTest = () => {
 let timerInterval = null
 
 const startTimer = () => {
+  // Only start timer if there's a time limit
+  if (timeRemaining.value <= 0) return
+  
   timerInterval = setInterval(() => {
     if (timeRemaining.value > 0) {
       timeRemaining.value--
@@ -441,16 +472,35 @@ const startTimer = () => {
 
 // Lifecycle
 onMounted(() => {
+  // Set custom time limit if provided
+  if (testMode === 'practice' && customTimeLimit) {
+    const timeInMinutes = parseInt(customTimeLimit)
+    if (!isNaN(timeInMinutes)) {
+      timeRemaining.value = timeInMinutes * 60
+    } else if (customTimeLimit === '') {
+      // No time limit for practice mode
+      timeRemaining.value = 0
+      showTimer.value = false
+    }
+  }
+  
+  // Set initial active passage to first available passage
+  if (passages.value.length > 0) {
+    activePassage.value = passages.value[0].id
+  }
+  
   // Load saved answers if any
   const savedAnswers = localStorage.getItem(`test_${testId}_answers`)
   if (savedAnswers) {
     selectedAnswers.value = JSON.parse(savedAnswers)
   }
   
-  // Start timer
-  startTimer()
+  // Start timer only if time limit is set
+  if (timeRemaining.value > 0) {
+    startTimer()
+  }
   
-  // Initial setup complete - questions are shown in sheet format
+  console.log(`Test mode: ${testMode}`, `Selected sections:`, selectedSectionIds)
 })
 
 onUnmounted(() => {
@@ -502,6 +552,12 @@ onUnmounted(() => {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
+}
+
+.practice-mode-badge {
+  font-size: 0.875rem;
+  font-weight: 400;
+  opacity: 0.9;
 }
 
 .exit-btn {

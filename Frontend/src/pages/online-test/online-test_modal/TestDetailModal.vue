@@ -193,11 +193,20 @@ const startPractice = () => {
     return
   }
   
-  emit('start-practice', {
-    testId: props.testData.id,
-    sections: selectedSections.value,
-    timeLimit: selectedTime.value,
-    mode: 'practice'
+  // Close modal first
+  emit('close')
+  
+  // Navigate to practice mode with selected sections
+  const sectionIds = selectedSections.value.map(section => section.id).join(',')
+  router.push({
+    path: `/online-test/full-test/${props.testData.id}`,
+    query: {
+      mode: 'practice',
+      sections: sectionIds,
+      timeLimit: selectedTime.value,
+      title: props.testData.title,
+      type: props.testData.type
+    }
   })
 }
 
