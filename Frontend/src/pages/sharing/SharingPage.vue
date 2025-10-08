@@ -96,7 +96,6 @@
 </template>
 
 <script setup>
-import './SharingPage.css'
 import { ref, computed, onMounted } from 'vue'
 
 // Reactive data
@@ -164,3 +163,5 @@ onMounted(() => {
   console.log('Sharing page loaded')
 })
 </script>
+
+<style src="./SharingPage.css" scoped></style>

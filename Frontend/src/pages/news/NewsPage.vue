@@ -73,7 +73,6 @@
 </template>
 
 <script setup>
-import './NewsPage.css'
 import { ref, onMounted } from 'vue'
 
 // Sample data
@@ -114,3 +113,5 @@ onMounted(() => {
   console.log('News page loaded')
 })
 </script>
+
+<style src="./NewsPage.css" scoped></style>

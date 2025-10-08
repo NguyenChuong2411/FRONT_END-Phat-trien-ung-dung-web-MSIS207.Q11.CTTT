@@ -36,8 +36,8 @@
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/recruitment" class="nav-link" :class="{ active: isActiveRoute('/recruitment') }">
-            Tuyển dụng
+          <router-link to="/flashcard" class="nav-link" :class="{ active: isActiveRoute('/flashcard') }">
+            Học Flashcard
           </router-link>
         </li>
         <li class="nav-item">
@@ -90,7 +90,7 @@ const navigationItems = [
   { name: 'Luyện thi Online', path: '/online-test' },
   { name: 'Tin tức', path: '/news' },
   { name: 'Góc chia sẻ', path: '/sharing' },
-  { name: 'Tuyển dụng', path: '/recruitment' },
+  { name: 'Học Flashcard', path: '/flashcard' },
   { name: 'Liên hệ', path: '/contact' }
 ]
 
@@ -104,6 +104,10 @@ const closeMobileMenu = () => {
 }
 
 const isActiveRoute = (path) => {
+  // Special case for online-test routes
+  if (path === '/online-test') {
+    return route.path === '/online-test' || route.path.startsWith('/online-test/')
+  }
   return route.path === path
 }
 </script>

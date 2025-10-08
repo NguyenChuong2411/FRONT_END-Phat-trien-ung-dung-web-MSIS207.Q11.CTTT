@@ -50,10 +50,11 @@
 </template>
 
 <script setup>
-import './AboutPage.css'
 import { onMounted } from 'vue'
 
 onMounted(() => {
   console.log('About page loaded')
 })
 </script>
+
+<style src="./AboutPage.css" scoped></style>

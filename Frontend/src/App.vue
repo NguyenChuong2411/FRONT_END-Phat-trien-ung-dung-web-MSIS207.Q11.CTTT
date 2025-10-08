@@ -1,6 +1,8 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import NavigationBar from './components/NavigationBar.vue'
+import Footer from './components/Footer.vue'
+
 </script>
 
 <template>
@@ -11,6 +13,10 @@ import NavigationBar from './components/NavigationBar.vue'
   <main class="main-content">
     <RouterView />
   </main>
+
+  <!-- Footer -->
+  <Footer />
+
 </template>
 
 <style>
@@ -29,6 +35,7 @@ body {
 .main-content {
   padding-top: 80px; /* Add space for fixed navigation bar */
   min-height: calc(100vh - 80px);
+  margin-bottom: 0; /* Remove any bottom margin to ensure footer connects */
 }
 </style>
 
