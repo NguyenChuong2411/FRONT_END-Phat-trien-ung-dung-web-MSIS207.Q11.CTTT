@@ -119,6 +119,7 @@ import SearchBar from '../../components/SearchBar.vue'
 import Pagination from '../../components/Pagination.vue'
 import TestDetailModal from './online-test_modal/TestDetailModal.vue'
 import { ref, computed, onMounted } from 'vue'
+import { fetchAllTests } from './FullTestPageAPI.js'
 import { useRouter } from 'vue-router'
 
 // Search functionality
@@ -141,154 +142,9 @@ const itemsPerPage = 6
 const showDetailModal = ref(false)
 const selectedTest = ref(null)
 
-// Sample test data (replace with API call)
-const allTests = ref([
-  {
-    id: 1,
-    title: 'IELTS Simulation Listening test 1',
-    type: 'IELTS Academic',
-    duration: '30 phút',
-    questions: '40 câu hỏi',
-    attempts: '2288',
-    participants: '1200+',
-    rating: '4.5',
-    description: '4 phần thi | 40 câu hỏi | 40 phút (30 phút nghe + 10 phút chép bài)',
-    category: 'ielts-academic'
-  },
-  {
-    id: 2,
-    title: 'IELTS Simulation Listening test 2',
-    type: 'IELTS Academic',
-    duration: '30 phút',
-    questions: '40 câu hỏi',
-    attempts: '2140',
-    participants: '980+',
-    rating: '4.3',
-    description: '4 phần thi | 40 câu hỏi | 40 phút (30 phút nghe + 10 phút chép bài)',
-    category: 'ielts-academic'
-  },
-  {
-    id: 3,
-    title: 'TOEIC Listening Practice Test',
-    type: 'TOEIC',
-    duration: '45 phút',
-    questions: '100 câu hỏi',
-    attempts: '1850',
-    participants: '750+',
-    rating: '4.2',
-    description: 'Bài thi thực hành TOEIC Listening với 100 câu hỏi',
-    category: 'toeic'
-  },
-  {
-    id: 4,
-    title: 'IELTS General Training Reading',
-    type: 'IELTS General',
-    duration: '60 phút',
-    questions: '40 câu hỏi',
-    attempts: '1420',
-    participants: '600+',
-    rating: '4.4',
-    description: '3 phần thi | 40 câu hỏi | 60 phút đọc hiểu',
-    category: 'ielts-general'
-  },
-  {
-    id: 5,
-    title: 'TOEIC Speaking & Writing',
-    type: 'TOEIC SW',
-    duration: '90 phút',
-    questions: '19 câu hỏi',
-    attempts: '980',
-    participants: '450+',
-    rating: '4.1',
-    description: 'Bài thi TOEIC Speaking & Writing đầy đủ',
-    category: 'toeic-sw'
-  },
-  // Add more sample data to demonstrate pagination
-  {
-    id: 6,
-    title: 'IELTS Academic Writing Task 1',
-    type: 'IELTS Academic',
-    duration: '20 phút',
-    questions: '1 bài viết',
-    attempts: '1650',
-    participants: '820+',
-    rating: '4.3',
-    description: 'Luyện tập viết biểu đồ và báo cáo',
-    category: 'ielts-academic'
-  },
-  {
-    id: 7,
-    title: 'IELTS Academic Writing Task 1',
-    type: 'IELTS Academic',
-    duration: '20 phút',
-    questions: '1 bài viết',
-    attempts: '1650',
-    participants: '820+',
-    rating: '4.3',
-    description: 'Luyện tập viết biểu đồ và báo cáo',
-    category: 'ielts-academic'
-  },
-  {
-    id: 8,
-    title: 'IELTS Academic Writing Task 1',
-    type: 'IELTS Academic',
-    duration: '20 phút',
-    questions: '1 bài viết',
-    attempts: '1650',
-    participants: '820+',
-    rating: '4.3',
-    description: 'Luyện tập viết biểu đồ và báo cáo',
-    category: 'ielts-academic'
-  },
-  {
-    id: 9,
-    title: 'IELTS Academic Writing Task 1',
-    type: 'IELTS Academic',
-    duration: '20 phút',
-    questions: '1 bài viết',
-    attempts: '1650',
-    participants: '820+',
-    rating: '4.3',
-    description: 'Luyện tập viết biểu đồ và báo cáo',
-    category: 'ielts-academic'
-  },
-  {
-    id: 10,
-    title: 'IELTS Academic Writing Task 1',
-    type: 'IELTS Academic',
-    duration: '20 phút',
-    questions: '1 bài viết',
-    attempts: '1650',
-    participants: '820+',
-    rating: '4.3',
-    description: 'Luyện tập viết biểu đồ và báo cáo',
-    category: 'ielts-academic'
-  },
-  {
-    id: 11,
-    title: 'IELTS Academic Writing Task 1',
-    type: 'IELTS Academic',
-    duration: '20 phút',
-    questions: '1 bài viết',
-    attempts: '1650',
-    participants: '820+',
-    rating: '4.3',
-    description: 'Luyện tập viết biểu đồ và báo cáo',
-    category: 'ielts-academic'
-  },
-  {
-    id: 12,
-    title: 'IELTS Academic Writing Task 1',
-    type: 'IELTS Academic',
-    duration: '20 phút',
-    questions: '1 bài viết',
-    attempts: '1650',
-    participants: '820+',
-    rating: '4.3',
-    description: 'Luyện tập viết biểu đồ và báo cáo',
-    category: 'ielts-academic'
-  }
-])
+const allTests = ref([]) // <-- Khởi tạo mảng rỗng
+const isLoading = ref(true) // <-- Thêm trạng thái loading
+const error = ref(null) // <-- Thêm trạng thái lỗi
 
 // Computed properties
 const filteredTests = computed(() => {
@@ -296,7 +152,11 @@ const filteredTests = computed(() => {
 
   // Filter by tab
   if (activeTab.value !== 'all') {
-    filtered = filtered.filter(test => test.category === activeTab.value)
+    // Sửa lại logic filter cho khớp với dữ liệu từ DTO
+    const typeName = searchTabs.find(t => t.value === activeTab.value)?.label;
+    if (typeName) {
+        filtered = filtered.filter(test => test.type === typeName);
+    }
   }
 
   // Filter by search query
@@ -305,7 +165,7 @@ const filteredTests = computed(() => {
     filtered = filtered.filter(test => 
       test.title.toLowerCase().includes(query) ||
       test.type.toLowerCase().includes(query) ||
-      test.description.toLowerCase().includes(query)
+      (test.description && test.description.toLowerCase().includes(query))
     )
   }
 
@@ -326,12 +186,12 @@ const paginatedTests = computed(() => {
 const handleSearch = ({ query, tab }) => {
   searchQuery.value = query
   activeTab.value = tab
-  currentPage.value = 1 // Reset to first page when searching
+  currentPage.value = 1
 }
 
 const handleTabChange = (tab) => {
   activeTab.value = tab
-  currentPage.value = 1 // Reset to first page when changing tab
+  currentPage.value = 1
 }
 
 const handlePageChange = (page) => {
@@ -363,40 +223,20 @@ const closeTestDetail = () => {
   selectedTest.value = null
 }
 
-const handleStartPractice = (data) => {
-  console.log('Starting practice:', data)
-  // Implement practice mode navigation
-  closeTestDetail()
-}
-
-const handleStartFullTest = (data) => {
-  // This is now handled directly in TestDetailModal
-  // Modal will close itself and navigate to FullTestPage
-  console.log('Full test started:', data)
-}
-
-const handleJoinDiscussion = (data) => {
-  console.log('Joining discussion:', data)
-  // Implement discussion navigation
-  closeTestDetail()
-}
-
-// // Direct test start method
-// const startDirectTest = (test) => {
-//   console.log('Starting direct test:', test)
-//   router.push({
-//     name: 'full-test',
-//     params: { testId: test.id },
-//     query: { 
-//       title: test.title,
-//       type: test.type,
-//       duration: test.duration
-//     }
-//   })
-// }
-
-onMounted(() => {
-  console.log('Online Test page loaded')
+// Hàm gọi API khi component được mounted
+onMounted(async () => {
+  try {
+    // Gọi API để lấy dữ liệu
+    const dataFromApi = await fetchAllTests();
+    allTests.value = dataFromApi;
+  } catch (err) {
+    // Xử lý lỗi nếu API không thành công
+    error.value = 'Không thể tải danh sách bài thi. Vui lòng thử lại sau.';
+    console.error(err);
+  } finally {
+    // Dù thành công hay thất bại, cũng kết thúc trạng thái loading
+    isLoading.value = false;
+  }
 })
 </script>
 
