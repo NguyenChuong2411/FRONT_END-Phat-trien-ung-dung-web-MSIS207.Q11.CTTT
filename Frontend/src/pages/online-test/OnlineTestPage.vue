@@ -61,12 +61,10 @@
               <!-- Test Stats -->
               <div class="box-stats">
                 <div class="box-stat-item">
-                  <span class="box-stat-icon">👥</span>
                   <span class="box-stat-value">{{ test.participants }}</span>
                   <span>người tham gia</span>
                 </div>
                 <div class="box-stat-item">
-                  <span class="box-stat-icon">⭐</span>
                   <span class="box-stat-value">{{ test.rating }}</span>
                   <span>điểm đánh giá</span>
                 </div>
@@ -119,7 +117,7 @@ import SearchBar from '../../components/SearchBar.vue'
 import Pagination from '../../components/Pagination.vue'
 import TestDetailModal from './online-test_modal/TestDetailModal.vue'
 import { ref, computed, onMounted } from 'vue'
-import { fetchAllTests } from './FullTestPageAPI.js'
+import { fetchAllTests, fetchTestDetails } from './OnlineTestPageAPI.js'
 import { useRouter } from 'vue-router'
 
 // Search functionality
@@ -213,9 +211,16 @@ const getBadgeClass = (type) => {
 }
 
 // Modal methods
-const openTestDetail = (test) => {
-  selectedTest.value = test
-  showDetailModal.value = true
+const openTestDetail = async (test) => {
+  try {
+    // Fetch chi tiết test với passages data
+    const detailedTest = await fetchTestDetails(test.id)
+    selectedTest.value = detailedTest
+    showDetailModal.value = true
+  } catch (error) {
+    selectedTest.value = test
+    showDetailModal.value = true
+  }
 }
 
 const closeTestDetail = () => {

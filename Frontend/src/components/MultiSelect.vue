@@ -251,10 +251,11 @@ const filteredOptions = computed(() => {
   }
   
   const query = searchQuery.value.toLowerCase()
-  return props.options.filter(option => {
+  const filtered = props.options.filter(option => {
     const label = getItemLabel(option).toLowerCase()
     return label.includes(query)
   })
+  return filtered
 })
 
 const isAllSelected = computed(() => {
@@ -496,7 +497,7 @@ onUnmounted(() => {
   color: #1e40af;
   border-radius: 0.25rem;
   font-size: 0.875rem;
-  max-width: 150px;
+  max-width: 180px;
 }
 
 .selected-tag:hover {
@@ -589,8 +590,7 @@ onUnmounted(() => {
 
 /* Select All Option */
 .select-all-option {
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #ccced0;
   background: #f9fafb;
 }
 

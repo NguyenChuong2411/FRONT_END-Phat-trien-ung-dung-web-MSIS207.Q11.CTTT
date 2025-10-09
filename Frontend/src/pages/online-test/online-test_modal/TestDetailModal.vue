@@ -165,12 +165,19 @@ const activeTab = ref('practice')
 const selectedTime = ref('')
 const selectedSections = ref([])
 
-// Test sections data
-const testSections = [
-  { id: 'passage1', name: 'Passage 1 (13 câu hỏi)', questions: 13 },
-  { id: 'passage2', name: 'Passage 2 (13 câu hỏi)', questions: 13 },
-  { id: 'passage3', name: 'Passage 3 (14 câu hỏi)', questions: 14 }
-]
+// Dynamic test sections from testData
+const testSections = computed(() => {
+  if (!props.testData?.passages) {
+    return []
+  }
+  
+  const sections = props.testData.passages.map(passage => ({
+    id: passage.id,
+    name: `${passage.title} (${passage.questions?.length || 0} câu hỏi)`,
+    questions: passage.questions?.length || 0
+  }))
+  return sections
+})
 
 // Discussion data (mock)
 const discussionCount = computed(() => Math.floor(Math.random() * 50) + 10)
@@ -195,15 +202,16 @@ const startPractice = () => {
   
   // Close modal first
   emit('close')
-  
+
   // Navigate to practice mode with selected sections
-  const sectionIds = selectedSections.value.map(section => section.id).join(',')
+  const sectionIds = selectedSections.value.map(section => String(section.id)).join(',')
+  
   router.push({
     path: `/online-test/full-test/${props.testData.id}`,
     query: {
       mode: 'practice',
       sections: sectionIds,
-      timeLimit: selectedTime.value,
+      timeLimit: selectedTime.value || '',
       title: props.testData.title,
       type: props.testData.type
     }
