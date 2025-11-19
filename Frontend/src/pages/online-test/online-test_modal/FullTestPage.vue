@@ -87,11 +87,19 @@
             <p>{{ error }}</p>
           </div>
           
-          <div v-else-if="activePassage && !activePassage.isListening" class="passage-text" v-html="activePassage.content"></div>
+          <div v-else-if="activePassage && !activePassage.isListening" class="passage-text">
+            <h3 v-if="activePassage.sectionType === 'writing'" class="task-title">{{ activePassage.title }}</h3>
+            <div v-html="activePassage.content"></div>
+          </div>
           
           <div v-else-if="activePassage && activePassage.isListening" class="passage-text listening-placeholder">
-            <i class="fa-solid fa-headphones"></i>
-            <p>Đây là phần thi Nghe. Hãy nghe file audio và trả lời câu hỏi bên phải.</p>
+            <div v-if="activePassage.sectionType === 'speaking'" class="speaking-guide">
+              <h3>Phần thi Speaking</h3>
+              <p>Hãy xem các đề mẫu và luyện tập</p>
+            </div>
+            <div v-else>
+              <p>Đây là phần thi Nghe. Hãy nghe file audio và trả lời câu hỏi bên phải.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -113,8 +121,58 @@
 
           <div class="questions-list">
             <template v-for="question in currentPassageQuestions" :key="question.id">
-              <!-- Question Display -->
-              <div 
+              
+              <!-- Writing Question -->
+              <div v-if="activePassage?.sectionType === 'writing'" class="question-item writing-item">
+                <div class="question-content">
+                  <!-- <div class="question-text" v-html="question.prompt"></div> -->
+                  
+                  <div class="writing-area">
+                    <label class="writing-label">Bài làm của bạn:</label>
+                    <textarea 
+                      class="writing-input" 
+                      rows="15" 
+                      placeholder="Nhập câu trả lời của bạn tại đây..."
+                      v-model="selectedAnswers[question.id]"
+                      @input="saveAnswer(question.id, $event.target.value)"
+                    ></textarea>
+                    <div class="word-count">
+                      Số từ: {{ (selectedAnswers[question.id] || '').trim().split(/\s+/).filter(w => w).length }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Speaking Question -->
+              <div v-else-if="activePassage?.sectionType === 'speaking'" class="question-item speaking-item">
+                <div class="question-number-badge">{{ getQuestionDisplayRange(question) }}</div>
+                <div class="question-content">
+                  <div class="question-text" v-html="question.prompt"></div>
+                  
+                  <div class="recorder-ui">
+                    <div class="recorder-status">
+                      <span class="status-dot"></span> Sẵn sàng ghi âm
+                    </div>
+                    <button class="record-btn">
+                      Bắt đầu nói
+                    </button>
+                    <p class="recorder-note">* Chức năng ghi âm đang được phát triển. Vui lòng tự luyện tập và nhấn nộp bài khi hoàn thành.</p>
+                    
+                    <!-- <div class="manual-confirm">
+                      <label>
+                        <input type="checkbox" 
+                          :checked="selectedAnswers[question.id] === 'completed'"
+                          @change="saveAnswer(question.id, $event.target.checked ? 'completed' : '')"
+                        > 
+                        Tôi đã hoàn thành phần nói này
+                      </label>
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Regular Question (Reading/Listening) -->
+              <div v-else 
                 :data-question-id="question.id"
                 class="question-item"
                 :class="{ answered: isQuestionAnswered(question) }"
@@ -170,8 +228,8 @@
                 </div>
               </div>
 
-              <!-- Table Answer Inputs - Outside question-item -->
-              <div v-if="question.questionType === 'table' && question.tableData" class="table-answers-section">
+              <!-- Table Answer Inputs - Outside question-item (only for regular tests) -->
+              <div v-if="question.questionType === 'table' && question.tableData && activePassage?.sectionType !== 'speaking' && activePassage?.sectionType !== 'writing'" class="table-answers-section">
                 <div 
                   v-for="answerField in getAnswerFields(question)" 
                   :key="answerField.answerId"
@@ -298,6 +356,10 @@ const timeRemaining = ref(3600)
 const showExitConfirm = ref(false)
 const showSubmitConfirm = ref(false)
 
+const isTOEICSW = computed(() => {
+  return route.query.type === 'TOEIC SW' || testData.value?.type === 'TOEIC SW';
+});
+
 // Listening test specific states
 const isListeningTest = computed(() => {
   return !!(audioUrl.value || (testData.value?.parts && testData.value.parts.length > 0))
@@ -311,27 +373,72 @@ const activePartId = ref(null)
 const passages = computed(() => {
   if (!testData.value) return [];
   
-  // Lấy dữ liệu Listening (Parts)
-  const parts = (testData.value.parts || []).map(part => ({
-    id: part.id,
-    title: part.title || `Part ${part.partNumber}`, // Dùng title của part
-    content: null, // Phần Listening không có nội dung đọc
-    questions: part.questionGroups ? part.questionGroups.flatMap(group => group.questions || []) : [],
-    isListening: true
-  }));
+  const sections = [];
 
-  // Lấy dữ liệu Reading (Passages)
-  const passages = (testData.value.passages || []).map(p => ({
-    id: p.id,
-    title: p.title || 'Reading Passage',
-    content: p.content, // Phần Reading có nội dung đọc
-    questions: p.questions || [],
-    isListening: false
-  }));
+  // Map Listening Parts
+  if (testData.value.parts && testData.value.parts.length > 0) {
+    sections.push(...testData.value.parts.map(part => ({
+      id: part.id,
+      title: part.title || `Part ${part.partNumber}`,
+      content: null, 
+      questions: part.questionGroups ? part.questionGroups.flatMap(group => group.questions || []) : [],
+      isListening: true,
+      sectionType: 'listening'
+    })));
+  }
 
-  // Gộp lại và áp dụng filter nếu cần
-  let allSections = [...parts, ...passages];
-  
+  // Map Reading Passages
+  if (testData.value.passages && testData.value.passages.length > 0) {
+    sections.push(...testData.value.passages.map(p => ({
+      id: p.id,
+      title: p.title || 'Reading Passage',
+      content: p.content, 
+      questions: p.questions || [],
+      isListening: false,
+      sectionType: 'reading'
+    })));
+  }
+
+  // Map Speaking Questions (TOEIC SW)
+  if (testData.value.speakingQuestions && testData.value.speakingQuestions.length > 0) {
+    sections.push(...testData.value.speakingQuestions.map((s, index) => ({
+      id: `speaking_${s.id}`,
+      title: `Speaking Q${index + 1}: ${s.partName}`,
+      content: null,
+      isListening: true,
+      sectionType: 'speaking',
+      questions: [{
+        id: s.id,
+        prompt: s.questionText,
+        questionType: 'speaking', 
+        questionNumber: index + 1,
+        preparationTime: s.preparationTime,
+        responseTime: s.responseTime
+      }]
+    })));
+  }
+
+  // Map Writing Tasks (TOEIC SW)
+  if (testData.value.writingTasks && testData.value.writingTasks.length > 0) {
+    sections.push(...testData.value.writingTasks.map((w, index) => ({
+      id: `writing_${w.id}`,
+      title: `Writing Task ${index + 1}: ${w.taskType}`,
+      content: w.prompt,
+      isListening: false,
+      sectionType: 'writing',
+      questions: [{
+        id: w.id,
+        prompt: w.prompt,
+        questionType: 'writing',
+        questionNumber: index + 1,
+        minWords: w.minWords,
+        durationMinutes: w.durationMinutes
+      }]
+    })));
+  }
+
+  // Áp dụng filter nếu cần (practice mode)
+  let allSections = sections;
   if (testMode === 'practice' && selectedSectionIds.length > 0) {
     // Lọc các section nếu ở chế độ luyện tập theo section
     allSections = allSections.filter(section => {
@@ -843,3 +950,171 @@ onBeforeRouteLeave((to, from, next) => {
 </script>
 
 <style src="./FullTestPage.css" scoped></style>
+
+<style scoped>
+/* CSS MỚI CHO TOEIC SW */
+
+/* Task title styles */
+.task-title {
+  color: #1f2937;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Writing Styles */
+.writing-item {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.writing-area {
+  margin-top: 1.5rem;
+}
+
+.writing-label {
+  display: block;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.writing-input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 300px;
+  background-color: #fff;
+}
+
+.writing-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.word-count {
+  text-align: right;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Speaking Styles */
+.speaking-guide {
+  text-align: center;
+  padding: 2rem;
+  color: #4b5563;
+}
+
+.speaking-guide i {
+  font-size: 3rem;
+  color: #f59e0b;
+  margin-bottom: 1rem;
+}
+
+.speaking-guide h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+}
+
+.speaking-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.recorder-ui {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.recorder-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #059669;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.record-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+}
+
+.record-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.recorder-note {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.manual-confirm {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.manual-confirm label {
+  cursor: pointer;
+  color: #059669;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.manual-confirm input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #059669;
+}
+</style>
