@@ -221,14 +221,10 @@ const getBadgeClass = (type) => {
 const openTestDetail = async (testItem) => {
   try {
     let fullDetails;
-    
-    // Dựa vào skillTypeId để gọi đúng API
-    if (testItem.skillTypeId === 1) { // 1 = Reading
-      fullDetails = await fetchReadingTestDetails(testItem.id);
-    } else if (testItem.skillTypeId === 2) { // 2 = Listening
+    try {
       fullDetails = await fetchListeningTestDetails(testItem.id);
-    } else {
-      // Mặc định cho TOEIC hoặc các loại khác (giả sử Reading)
+    } catch (listeningError) {
+      console.warn("Could not fetch as ListeningTest, trying ReadingTest:", listeningError);
       fullDetails = await fetchReadingTestDetails(testItem.id);
     }
 
@@ -237,9 +233,8 @@ const openTestDetail = async (testItem) => {
     showDetailModal.value = true;
     
   } catch (error) {
-    console.error("Không thể tải chi tiết bài thi:", error);
-    showError('Không thể tải chi tiết bài thi', 'Lỗi tải dữ liệu');
-    // Fallback: dùng dữ liệu cơ bản từ list
+    // Nếu cả hai API đều lỗi, vẫn mở modal với thông tin cơ bản
+    console.error("Could not fetch test details, showing basic info:", error);
     selectedTest.value = testItem;
     showDetailModal.value = true;
   }

@@ -12,7 +12,13 @@
       </div>
       
       <div class="modal-body">
-        <form @submit.prevent="handleSubmit" class="test-form">
+        <div v-if="isLoading" class="loading-state">
+          <div class="loading-spinner">
+            <p>Đang tải dữ liệu đề thi...</p>
+          </div>
+        </div>
+
+        <form v-else @submit.prevent="handleSubmit" class="test-form">
           <!-- Basic Information -->
           <div class="form-section">
             <h4 class="section-title">Thông tin cơ bản</h4>
@@ -78,63 +84,52 @@
               </div>
             </div>
 
-            <!-- Audio File Section -->
-            <div class="form-section">
-              <h4 class="section-title">File âm thanh</h4>
+          </div>
 
-              <!-- Display current audio if exists -->
-              <div v-if="currentAudioPath && !viewOnly" class="audio-preview current-audio">
-                <p><strong>File hiện tại:</strong></p>
-                <audio controls :src="currentAudioPath" class="audio-player"></audio>
+          <!-- Audio File Section -->
+          <div v-if="shouldShowListeningSection" class="form-section">
+            <h4 class="section-title">File âm thanh</h4>
+
+            <!-- Display current audio if exists -->
+            <div v-if="currentAudioPath" class="audio-preview current-audio">
+              <p><strong>{{ viewOnly ? 'File âm thanh:' : 'File hiện tại:' }}</strong></p>
+              <audio controls :src="currentAudioPath" class="audio-player"></audio>
+              <div class="audio-actions" v-if="!viewOnly">
+                <button type="button" class="btn danger small" @click="removeCurrentAudio">
+                  Xóa file hiện tại
+                </button>
               </div>
+            </div>
 
-              <!-- View-only audio display -->
-              <div v-if="currentAudioPath && viewOnly" class="audio-preview current-audio">
-                <p><strong>File âm thanh:</strong></p>
-                <audio controls :src="currentAudioPath" class="audio-player"></audio>
+            <!-- File Upload Input -->
+            <div v-if="!viewOnly" class="form-group">
+              <label>{{ currentAudioPath ? 'Thay thế bằng file mới:' : 'Tải file âm thanh:' }}</label>
+              <input
+                type="file"
+                accept="audio/*"
+                @change="handleAudioUpload"
+                class="form-input"
+                ref="audioFileInput"
+              />
+              <small v-if="uploadStatus" :class="uploadError ? 'error-text' : 'success-text'">
+                {{ uploadStatus }}
+              </small>
+            </div>
+
+            <!-- New Audio File Preview -->
+            <div v-if="selectedAudioFile && !viewOnly" class="audio-preview new-audio">
+              <p><strong>File mới được chọn:</strong></p>
+              <audio v-if="audioPreviewUrl" controls :src="audioPreviewUrl" class="audio-player"></audio>
+              <div class="audio-info">
+                <i class="fa-solid fa-file-audio"></i>
+                <span>{{ selectedFileName }}</span>
+                <small class="file-note">File sẽ được tải lên khi bấm "Cập nhật đề thi"</small>
               </div>
-
-              <!-- File Upload Input -->
-              <div v-if="!viewOnly" class="form-group">
-                <label>{{ currentAudioPath ? 'Thay thế bằng file mới:' : 'Tải file âm thanh:' }}</label>
-                <input
-                  type="file"
-                  accept="audio/*"
-                  @change="handleAudioUpload"
-                  class="form-input"
-                  ref="audioFileInput"
-                />
-                <!-- <small v-if="uploadStatus" :class="uploadError ? 'error-text' : 'success-text'">
-                  {{ uploadStatus }}
-                </small> -->
+              <div class="audio-actions">
+                <button type="button" class="btn secondary small" @click="clearSelectedAudio">
+                  Hủy chọn file
+                </button>
               </div>
-
-              <!-- New Audio File Preview -->
-              <div v-if="selectedAudioFile && !viewOnly" class="audio-preview new-audio">
-                <p><strong>File mới được chọn:</strong></p>
-                <audio v-if="audioPreviewUrl" controls :src="audioPreviewUrl" class="audio-player"></audio>
-                <div class="audio-info">
-                  <i class="fa-solid fa-file-audio"></i>
-                  <span>{{ selectedFileName }}</span>
-                  <small class="file-note">File sẽ được tải lên khi bấm "Cập nhật đề thi"</small>
-                </div>
-                <div class="audio-actions">
-                  <button type="button" class="btn secondary small" @click="clearSelectedAudio">
-                    Hủy chọn file
-                  </button>
-                </div>
-              </div>
-
-              <!-- Audio File ID display (for debugging) -->
-              <!-- <div v-if="formData.audioFileId" class="form-group">
-                <label>Audio File ID</label>
-                <input 
-                  type="text" 
-                  :value="formData.audioFileId" 
-                  disabled
-                  class="form-input disabled"
-                />
-              </div> -->
             </div>
 
             <div class="form-group">
@@ -150,26 +145,24 @@
             </div>
           </div>
 
-          <div class="form-section">
+          <!-- Reading Section -->
+          <div v-if="shouldShowReadingSection" class="form-section">
             <div class="section-header">
               <h4 class="section-title">
+                <i class="fa-solid fa-file-text"></i>
                 Đoạn văn Reading
               </h4>
-              <button v-if="!viewOnly && showReadingSection" type="button" class="btn-add" @click="addPassage">
+              <button v-if="!viewOnly" type="button" class="btn-add" @click="addPassage">
                 <i class="fa-solid fa-plus"></i>
                 Thêm đoạn văn
               </button>
             </div>
 
-            <div v-if="!showReadingSection" class="section-disabled">
-              <p><i class="fa-solid fa-info-circle"></i> Phần Reading không khả dụng cho loại bài thi này</p>
+            <div v-if="formData.passages.length === 0" class="empty-state">
+              <p>Chưa có đoạn văn nào.</p>
             </div>
 
-            <div v-else-if="formData.passages.length === 0" class="empty-state">
-              <p>Chưa có đoạn văn nào. Click "Thêm đoạn văn" để bắt đầu.</p>
-            </div>
-
-            <div v-for="(passage, pIndex) in formData.passages" :key="'passage-' + pIndex" class="passage-item" v-show="showReadingSection">
+            <div v-for="(passage, pIndex) in formData.passages" :key="'passage-' + pIndex" class="passage-item">
               <div class="item-header">
                 <h5>
                   <i class="fa-solid fa-file-text"></i>
@@ -249,28 +242,24 @@
             </div>
           </div>
 
-          <div class="form-section">
+          <!-- Listening Section -->
+          <div v-if="shouldShowListeningSection" class="form-section">
             <div class="section-header">
               <h4 class="section-title">
                 <i class="fa-solid fa-headphones"></i>
                 Listening Parts
               </h4>
-              <button v-if="!viewOnly && showListeningSection" type="button" class="btn-add" @click="addListeningPart">
+              <button v-if="!viewOnly" type="button" class="btn-add" @click="addListeningPart">
                 <i class="fa-solid fa-plus"></i>
                 Thêm Part
               </button>
             </div>
 
-            <div v-if="!showListeningSection" class="section-disabled">
-              <p><i class="fa-solid fa-info-circle"></i> Phần Listening không khả dụng cho loại bài thi này</p>
+            <div v-if="formData.listeningParts.length === 0" class="empty-state">
+              <p>Chưa có Listening Part nào.</p>
             </div>
 
-            <div v-else-if="formData.listeningParts.length === 0" class="empty-state">
-              <i class="fa-solid fa-headphones"></i>
-              <p>Chưa có Listening Part nào. Click "Thêm Part" để bắt đầu.</p>
-            </div>
-
-            <div v-for="(part, partIndex) in formData.listeningParts" :key="'part-' + partIndex" class="listening-part-item" v-show="showListeningSection">
+            <div v-for="(part, partIndex) in formData.listeningParts" :key="'part-' + partIndex" class="listening-part-item">
               <div class="item-header">
                 <h5>
                   Part {{ partIndex + 1 }}
@@ -451,23 +440,39 @@ const uploadError = ref(false)
 const selectedAudioFile = ref(null) // Store selected file temporarily
 const audioPreviewUrl = ref('') // For new audio preview
 const selectedFileName = ref('') // Store selected file name for display
+const isTOEIC = computed(() => {
+  // Giả sử ID 3 là TOEIC. Cần đảm bảo ID này khớp với DB của bạn
+  return formData.value.testTypeId === 3; 
+});
 
-// Computed properties để xác định hiển thị phần nào
-const showReadingSection = computed(() => {
-  // Nếu không có skillTypeId (TOEIC, TOEIC SW) thì hiển thị cả 2
-  if (!formData.value.skillTypeId) return true
-  
-  // skillTypeId: 1 = Reading, 2 = Listening, 3 = Writing, 4 = Speaking
-  return formData.value.skillTypeId === 1 // Reading
-})
+const hasPassages = computed(() => {
+  return formData.value.passages && formData.value.passages.length > 0;
+});
 
-const showListeningSection = computed(() => {
-  // Nếu không có skillTypeId (TOEIC, TOEIC SW) thì hiển thị cả 2
-  if (!formData.value.skillTypeId) return true
-  
-  // skillTypeId: 1 = Reading, 2 = Listening, 3 = Writing, 4 = Speaking
-  return formData.value.skillTypeId === 2 // Listening
-})
+const hasListeningData = computed(() => {
+  return (formData.value.listeningParts && formData.value.listeningParts.length > 0) || 
+         !!formData.value.audioFileId || 
+         !!formData.value.audioFilePath ||
+         !!currentAudioPath.value;
+});
+
+// Logic hiển thị phần Reading
+const shouldShowReadingSection = computed(() => {
+  // Nếu là TOEIC thì luôn hiện
+  if (isTOEIC.value) return true;
+  // Nếu có dữ liệu Passages thì chắc chắn là đề Reading
+  if (hasPassages.value) return true;
+  // Nếu KHÔNG có dữ liệu Listening và cũng KHÔNG phải TOEIC -> Mặc định hiện Reading (cho trường hợp đề mới tạo hoặc lỗi)
+  if (!hasListeningData.value && !isTOEIC.value) return true;
+  return false;
+});
+
+// Logic hiển thị phần Listening và Audio
+const shouldShowListeningSection = computed(() => {
+  if (isTOEIC.value) return true;
+  if (hasListeningData.value) return true;
+  return false;
+});
 
 // Load test data
 const loadTestData = async () => {
@@ -550,6 +555,23 @@ const clearSelectedAudio = () => {
   
   uploadStatus.value = ''
   uploadError.value = false
+}
+
+const removeCurrentAudio = () => {
+  if (confirm('Bạn có chắc chắn muốn xóa file âm thanh hiện tại không?')) {
+    // Store the ID of the file to delete after saving
+    if (formData.value.audioFileId && !oldAudioFileIdToDelete.value) {
+      oldAudioFileIdToDelete.value = formData.value.audioFileId
+    }
+    
+    // Clear current audio display
+    currentAudioPath.value = null
+    formData.value.audioFileId = null
+    formData.value.audioFilePath = null
+    
+    uploadStatus.value = 'File âm thanh sẽ được xóa khi lưu đề thi'
+    uploadError.value = false
+  }
 }
 
 // Passage management
@@ -881,5 +903,24 @@ onUnmounted(() => {
 .success-text {
   color: #16a34a;
   font-size: 0.875rem;
+}
+
+/* Loading state styles */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: #6b7280;
+}
+
+.loading-spinner p {
+  margin: 0;
+  font-size: 1rem;
 }
 </style>
