@@ -61,8 +61,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="test in paginatedTests" :key="test.id" class="test-row">
-                <td class="test-id">#{{ test.id }}</td>
+              <tr v-for="(test, index) in paginatedTests" :key="test.id" class="test-row">
+                <td class="test-id">
+                  {{ (currentPage - 1) * itemsPerPage + index + 1 }}
+                </td>
                 <td class="test-title">
                   <div class="title-container">
                     <span class="title">{{ test.title }}</span>

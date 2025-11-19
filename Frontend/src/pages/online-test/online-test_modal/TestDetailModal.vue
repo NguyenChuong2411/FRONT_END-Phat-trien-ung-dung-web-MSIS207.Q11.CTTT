@@ -172,51 +172,58 @@ const activeTab = ref('practice')
 const selectedTime = ref('')
 const selectedSections = ref([])
 
-// --- CÁC COMPUTED ĐÃ SỬA ---
-
-// 1. Lấy SkillName (hoặc mặc định là "Practice")
+// Lấy SkillName
 const skillName = computed(() => {
+  // Kiểm tra nếu có cả listening và reading
+  const hasListening = props.testData?.parts && props.testData.parts.length > 0
+  const hasReading = props.testData?.passages && props.testData.passages.length > 0
+  
+  if (hasListening && hasReading) {
+    return 'Listening & Reading'
+  } else if (hasListening) {
+    return 'Listening'
+  } else if (hasReading) {
+    return 'Reading' 
+  }
+  
   return props.testData?.skillName || 'Practice';
 });
 
-// 2. Lấy SkillTypeId
+// Lấy SkillTypeId
 const skillTypeId = computed(() => {
   return props.testData?.skillTypeId;
 });
 
-// 3. Tính toán các phần thi (Sections) DỰA TRÊN SKILL
+// Tính toán các phần this
 const testSections = computed(() => {
-  // Skill 1 = Reading
-  if (skillTypeId.value === 1 && props.testData.passages) {
-    return props.testData.passages.map(passage => ({
-      id: passage.id,
-      name: `${passage.title} (${passage.questions?.length || 0} câu hỏi)`,
-      questions: passage.questions?.length || 0
-    }));
-  }
+  const sections = [];
   
-  // Skill 2 = Listening
-  if (skillTypeId.value === 2 && props.testData.parts) {
-    return props.testData.parts.map(part => ({
-      id: part.id,
+  // Thêm Listening Parts nếu có
+  if (props.testData.parts && props.testData.parts.length > 0) {
+    const listeningSection = props.testData.parts.map(part => ({
+      id: `listening_${part.id}`,
       name: `Part ${part.partNumber}: ${part.title} (${getTotalQuestionsInPart(part)} câu hỏi)`,
-      questions: getTotalQuestionsInPart(part)
+      questions: getTotalQuestionsInPart(part),
+      type: 'listening'
     }));
+    sections.push(...listeningSection);
   }
   
-  // Mặc định (ví dụ TOEIC L&R có thể vẫn dùng passages)
-  if (props.testData.passages) {
-     return props.testData.passages.map(passage => ({
-      id: passage.id,
+  // Thêm Reading Passages nếu có  
+  if (props.testData.passages && props.testData.passages.length > 0) {
+    const readingSection = props.testData.passages.map(passage => ({
+      id: `reading_${passage.id}`,
       name: `${passage.title} (${passage.questions?.length || 0} câu hỏi)`,
-      questions: passage.questions?.length || 0
+      questions: passage.questions?.length || 0,
+      type: 'reading'
     }));
+    sections.push(...readingSection);
   }
 
-  return [];
+  return sections;
 });
 
-// 4. Đếm số phần thi
+// Đếm số phần thi
 const partCount = computed(() => {
   return testSections.value.length;
 });
@@ -252,10 +259,17 @@ const startPractice = () => {
   emit('close')
 
   // Navigate to practice mode with selected sections
-  const sectionIds = selectedSections.value.map(section => String(section.id)).join(',')
+  // Extract actual IDs (remove listening_/reading_ prefix)
+  const sectionIds = selectedSections.value.map(section => {
+    const id = String(section.id)
+    if (id.startsWith('listening_') || id.startsWith('reading_')) {
+      return id.split('_')[1]
+    }
+    return id
+  }).join(',')
   
-  // Xác định skill type để route đúng
-  const skillType = skillTypeId.value === 2 ? 'listening' : 'reading'
+  // Xác định skill type - cho hybrid test, mặc định là listening nếu có audio
+  const skillType = (props.testData.audioUrl || props.testData.parts?.length > 0) ? 'listening' : 'reading'
   
   router.push({
     path: `/online-test/full-test/${props.testData.id}`,
@@ -274,8 +288,8 @@ const startFullTest = () => {
   // Close modal first
   emit('close')
   
-  // Xác định skill type để route đúng
-  const skillType = skillTypeId.value === 2 ? 'listening' : 'reading'
+  // Xác định skill type - cho hybrid test, mặc định là listening nếu có audio
+  const skillType = (props.testData.audioUrl || props.testData.parts?.length > 0) ? 'listening' : 'reading'
   
   // Navigate to full test page
   router.push({
