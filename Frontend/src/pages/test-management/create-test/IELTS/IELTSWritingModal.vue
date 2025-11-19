@@ -55,7 +55,6 @@
           <div class="form-section">
             <div class="section-header">
               <h4 class="section-title">
-                <i class="fa-solid fa-tasks"></i>
                 Writing Tasks ({{ writingTasks.length }})
               </h4>
               <button type="button" class="btn-add" @click="addWritingTask">
@@ -73,10 +72,10 @@
                 <h5>
                   <i class="fa-solid fa-edit"></i>
                   Task {{ taskIndex + 1 }}
-                  <span class="task-info">({{ task.taskType }})</span>
+                  <!-- <span class="task-info">({{ task.taskType }})</span> -->
                 </h5>
                 <button type="button" class="btn-remove" @click="removeWritingTask(taskIndex)">
-                  <i class="fa-solid fa-trash"></i>
+                  <i class="fa-solid fa-trash-can"></i>
                 </button>
               </div>
 
@@ -231,12 +230,11 @@
 
       <div class="modal-footer">
         <button type="button" class="btn secondary" @click="$emit('close')">
-          <i class="fa-solid fa-times"></i>
           Hủy bỏ
         </button>
         <button type="button" class="btn primary" @click="handleSubmit" :disabled="isSaving">
-          <i v-if="isSaving" class="fa-solid fa-spinner fa-spin"></i>
-          <i v-else class="fa-solid fa-save"></i>
+          <i v-if="isSaving"></i>
+          <i v-else ></i>
           {{ isSaving ? 'Đang tạo...' : 'Tạo đề thi Writing' }}
         </button>
       </div>

@@ -30,6 +30,7 @@
           :is-saving="isLoading"
           :is-page-mode="true"
           @save="saveTest"
+          @close="goBack"
         />
 
         <!-- IELTS Listening Form -->
@@ -41,6 +42,7 @@
           :is-saving="isLoading"
           :is-page-mode="true"
           @save="saveTest"
+          @close="goBack"
         />
 
         <!-- IELTS Writing Form -->
@@ -52,6 +54,7 @@
           :is-saving="isLoading"
           :is-page-mode="true"
           @save="saveTest"
+          @close="goBack"
         />
 
         <!-- TOEIC Form -->
@@ -61,6 +64,7 @@
           :is-saving="isLoading"
           :is-page-mode="true"
           @save="saveTest"
+          @close="goBack"
         />
 
         <!-- TOEIC SW Form -->
@@ -70,6 +74,7 @@
           :is-saving="isLoading"
           :is-page-mode="true"
           @save="saveTest"
+          @close="goBack"
         />
       </div>
     </section>
