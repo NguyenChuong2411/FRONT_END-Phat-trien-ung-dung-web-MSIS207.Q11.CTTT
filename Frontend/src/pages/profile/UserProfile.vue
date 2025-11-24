@@ -1,12 +1,12 @@
 <template>
   <div class="user-profile-page">
     <!-- Header Section -->
-    <section class="page-header">
+    <!-- <section class="page-header">
       <div class="header-container">
         <h1 class="page-title">THÔNG TIN CÁ NHÂN</h1>
         <p class="page-subtitle">Quản lý thông tin tài khoản của bạn</p>
       </div>
-    </section>
+    </section> -->
 
     <!-- Profile Content -->
     <section class="profile-section">
@@ -55,10 +55,10 @@
                   <span class="detail-value">{{ userProfile?.email || 'Chưa cập nhật' }}</span>
                 </div>
                 
-                <div class="detail-item">
+                <!-- <div class="detail-item">
                   <span class="detail-label">ID người dùng:</span>
                   <span class="detail-value">{{ userProfile?.id || 'N/A' }}</span>
-                </div>
+                </div> -->
               </div>
 
               <!-- Future expansion placeholder -->
@@ -192,7 +192,7 @@ onMounted(() => {
   background: #f8fafc;
   min-height: calc(100vh - 200px);
   padding: 2rem 0;
-  border-radius: 2rem 2rem 0 0;
+  /* border-radius: 2rem 2rem 0 0; */
   margin-top: 1rem;
 }
 
@@ -341,12 +341,12 @@ onMounted(() => {
 
 .detail-item {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 8fr;
   gap: 1rem;
   padding: 1rem;
   background: #f9fafb;
   border-radius: 0.5rem;
-  border-left: 4px solid #F6871F;
+  /* border-left: 4px solid #F6871F; */
 }
 
 .detail-label {

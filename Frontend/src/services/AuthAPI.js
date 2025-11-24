@@ -40,7 +40,6 @@ export const authAPI = {
   // Đăng ký
   register: async (registerData) => {
     try {
-      console.log('Register API call:', registerData)
       const response = await apiClient.post('/Auth/register', {
         fullName: registerData.fullName,
         email: registerData.email,
@@ -59,7 +58,6 @@ export const authAPI = {
   // Đăng nhập
   login: async (loginData) => {
     try {
-      console.log('Login API call:', loginData)
       const response = await apiClient.post('/Auth/login', {
         email: loginData.email,
         password: loginData.password
@@ -76,6 +74,7 @@ export const authAPI = {
             id: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
             email: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || loginData.email,
             fullName: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
+            roleId: parseInt(tokenPayload['role_id'] || 2),
             exp: tokenPayload.exp
           }
           localStorage.setItem('userInfo', JSON.stringify(userInfo))

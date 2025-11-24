@@ -82,7 +82,6 @@
 
           <!-- Empty State -->
           <div v-else class="box-list-empty">
-            <div class="box-list-empty-icon">�</div>
             <h3 class="box-list-empty-title">Không tìm thấy bài thi</h3>
             <p class="box-list-empty-description">
               Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc

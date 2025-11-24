@@ -110,3 +110,16 @@ export const fetchTestResult = async (attemptId) => {
     throw error;
   }
 };
+
+// Hàm để lấy lịch sử làm bài của người dùng
+export const fetchTestHistory = async () => {
+  try {
+    // Backend endpoint: GET /api/OnlineTest/GetMyTestHistory
+    // AuthAPI interceptor sẽ tự động đính kèm Token
+    const response = await apiClient.get('/OnlineTest/GetMyTestHistory');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching test history:', error);
+    throw error;
+  }
+};
