@@ -30,21 +30,21 @@
             Quản lý đề thi
           </router-link>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <router-link to="/news" class="nav-link" :class="{ active: isActiveRoute('/news') }">
             Tin tức
           </router-link>
-        </li>
+        </li> -->
         <!-- <li class="nav-item">
           <router-link to="/sharing" class="nav-link" :class="{ active: isActiveRoute('/sharing') }">
             Góc chia sẻ
           </router-link>
         </li> -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <router-link to="/flashcard" class="nav-link" :class="{ active: isActiveRoute('/flashcard') }">
             Học Flashcard
           </router-link>
-        </li>
+        </li> -->
         <li class="nav-item">
           <router-link to="/contact" class="nav-link" :class="{ active: isActiveRoute('/contact') }">
             Liên hệ
