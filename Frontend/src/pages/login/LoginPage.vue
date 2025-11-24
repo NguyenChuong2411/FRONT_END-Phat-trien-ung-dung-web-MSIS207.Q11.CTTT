@@ -1,5 +1,8 @@
 <template>
   <div class="login-page">
+    <!-- Notification Container -->
+    <NotificationContainer />
+    
     <div class="login-container">
       <!-- Login Form -->
       <div class="login-form-container">
@@ -134,7 +137,6 @@
                 {{ isRegisterMode ? 'Đăng ký' : 'Đăng nhập' }}
               </span>
               <span v-else class="loading-text">
-                <i class="fa-solid fa-spinner fa-spin"></i>
                 {{ isRegisterMode ? 'Đang đăng ký...' : 'Đang đăng nhập...' }}
               </span>
             </button>
@@ -159,14 +161,7 @@
                 <span>hoặc</span>
               </div>
               <div class="social-buttons">
-                <button type="button" class="social-button google" @click="loginWithGoogle">
-                  <i class="fa-brands fa-google"></i>
-                  <span>{{ isRegisterMode ? 'Đăng ký' : 'Đăng nhập' }} với Google</span>
-                </button>
-                <button type="button" class="social-button facebook" @click="loginWithFacebook">
-                  <i class="fa-brands fa-facebook-f"></i>
-                  <span>{{ isRegisterMode ? 'Đăng ký' : 'Đăng nhập' }} với Facebook</span>
-                </button>
+                <div id="google-button-container" class="google-btn-wrapper"></div>
               </div>
             </div>
           </form>
@@ -177,12 +172,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authAPI } from '@/services/AuthAPI.js'
+import { useNotification } from '@/composables/useNotification'
+import NotificationContainer from '@/components/NotificationContainer.vue'
+import { GOOGLE_CONFIG } from '@/config/google.js'
 
 const route = useRoute()
 const router = useRouter()
+const { success, error, warning } = useNotification()
 
 // Form state
 const isRegisterMode = ref(route.query.mode === 'register')
@@ -301,7 +300,7 @@ const handleSubmit = async () => {
       const result = await authAPI.register(registerData)
       
       if (result.success) {
-        alert('Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.')
+        success('Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.', 'Đăng ký thành công')
         // Chuyển sang chế độ đăng nhập
         router.push('/login')
         // Clear form data
@@ -312,8 +311,9 @@ const handleSubmit = async () => {
         // Hiển thị lỗi từ server
         if (result.error.includes('email')) {
           errors.email = 'Email này đã được sử dụng'
+          error('Email này đã được sử dụng. Vui lòng sử dụng email khác.', 'Đăng ký thất bại')
         } else {
-          alert(`Đăng ký thất bại: ${result.error}`)
+          error(result.error, 'Đăng ký thất bại')
         }
       }
     } else {
@@ -327,7 +327,15 @@ const handleSubmit = async () => {
       const result = await authAPI.login(loginData)
       
       if (result.success) {
-        alert('Đăng nhập thành công!')
+        // Lấy thông tin user profile mới nhất từ server
+        try {
+          await authAPI.getUserProfile()
+        } catch (profileError) {
+          console.error('Failed to fetch user profile after login:', profileError)
+          // Không block login flow nếu lỗi lấy profile
+        }
+        
+        success('Chào mừng bạn quay trở lại!', 'Đăng nhập thành công')
         // Emit event để NavigationBar cập nhật trạng thái
         window.dispatchEvent(new Event('auth-state-changed'))
         // Redirect to home page or previous page
@@ -338,14 +346,15 @@ const handleSubmit = async () => {
         if (result.error.includes('email') || result.error.includes('password') || result.error.includes('không chính xác')) {
           errors.email = 'Email hoặc mật khẩu không chính xác'
           errors.password = 'Email hoặc mật khẩu không chính xác'
+          error('Vui lòng kiểm tra lại thông tin đăng nhập.', 'Email hoặc mật khẩu không chính xác')
         } else {
-          alert(`Đăng nhập thất bại: ${result.error}`)
+          error(result.error, 'Đăng nhập thất bại')
         }
       }
     }
-  } catch (error) {
-    console.error('Auth error:', error)
-    alert('Có lỗi xảy ra. Vui lòng kiểm tra kết nối internet và thử lại!')
+  } catch (err) {
+    console.error('Auth error:', err)
+    error('Có lỗi xảy ra. Vui lòng kiểm tra kết nối internet và thử lại!', 'Lỗi kết nối')
   } finally {
     isLoading.value = false
   }
@@ -360,15 +369,91 @@ const toggleMode = () => {
   })
 }
 
-const loginWithGoogle = () => {
-  console.log('Login with Google')
-  // TODO: Implement Google OAuth
+
+
+// Callback xử lý kết quả từ Google
+const handleGoogleCallback = async (response) => {
+  if (response.credential) {
+    isLoading.value = true
+    try {
+      const result = await authAPI.loginWithGoogle(response.credential)
+      if (result.success) {
+        success('Đăng nhập Google thành công!', 'Thành công')
+        // Emit event để NavigationBar cập nhật trạng thái
+        window.dispatchEvent(new Event('auth-state-changed'))
+        // Redirect to home page or previous page
+        const redirectTo = route.query.redirect || '/'
+        router.push(redirectTo)
+      } else {
+        error(result.error || 'Đăng nhập Google thất bại', 'Lỗi đăng nhập')
+      }
+    } catch (err) {
+      console.error('Google login error:', err)
+      error('Có lỗi xảy ra khi đăng nhập bằng Google. Vui lòng thử lại!', 'Lỗi kết nối')
+    } finally {
+      isLoading.value = false
+    }
+  } else {
+    error('Không nhận được thông tin từ Google', 'Lỗi Google Login')
+  }
 }
 
-const loginWithFacebook = () => {
-  console.log('Login with Facebook')
-  // TODO: Implement Facebook OAuth
+// Hàm render Google button
+const renderGoogleButton = () => {
+  const parentDiv = document.getElementById('google-button-container')
+  if (window.google && parentDiv) {
+    parentDiv.innerHTML = ''
+    google.accounts.id.renderButton(
+      parentDiv,
+      { 
+        theme: 'outline',
+        size: 'large',
+        width: '100%',
+        text: isRegisterMode.value ? 'signup_with' : 'signin_with',
+        logo_alignment: 'left'
+      }
+    )
+  }
 }
+
+// Lifecycle hooks
+onMounted(() => {
+  // Load Google Identity Services script
+  if (!document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    
+    script.onload = () => {
+      // Khởi tạo Google Identity
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CONFIG.CLIENT_ID,
+        callback: handleGoogleCallback,
+        auto_select: false
+      })
+
+      google.accounts.id.prompt()
+      renderGoogleButton()
+    }
+    
+    document.head.appendChild(script)
+  } else if (window.google) {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CONFIG.CLIENT_ID,
+      callback: handleGoogleCallback,
+      auto_select: false
+    })
+    google.accounts.id.prompt()
+    renderGoogleButton()
+  }
+})
+
+watch(isRegisterMode, () => {
+  setTimeout(() => {
+    renderGoogleButton()
+  }, 100)
+})
 </script>
 
 <style scoped>
@@ -647,11 +732,23 @@ const loginWithFacebook = () => {
   margin-bottom: 1.5rem;
 }
 
+.divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
 .divider span {
   background-color: white;
   color: #9ca3af;
   padding: 0 1rem;
   font-size: 0.875rem;
+  position: relative;
+  z-index: 1;
 }
 
 .social-buttons {
@@ -685,13 +782,24 @@ const loginWithFacebook = () => {
   color: #db4437;
 }
 
-.social-button.facebook:hover {
-  border-color: #4267b2;
-  color: #4267b2;
-}
-
 .social-button i {
   font-size: 1.25rem;
+}
+
+/* Google Button Wrapper */
+.google-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.google-btn-wrapper :deep(div[role="button"]) {
+  width: 100% !important;
+  border-radius: 0.5rem !important;
+  border: 2px solid #e5e7eb !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
 }
 
 /* Responsive */

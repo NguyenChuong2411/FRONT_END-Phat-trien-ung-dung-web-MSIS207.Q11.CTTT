@@ -246,5 +246,3 @@ onMounted(() => {
 </script>
 
 <style src="./HomePage.css" scoped></style>
-
-

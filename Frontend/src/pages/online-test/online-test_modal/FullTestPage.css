@@ -129,6 +129,31 @@
     text-align: justify;
 }
 
+/* Listening placeholder styles */
+.listening-placeholder {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6b7280;
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    border: 2px dashed #d1d5db;
+    margin: 1rem 0;
+}
+
+.listening-placeholder i {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.listening-placeholder p {
+    font-size: 1.1rem;
+    margin: 0;
+    font-style: italic;
+    text-align: center;
+}
+
 .loading-state,
 .error-state {
     padding: 2rem;

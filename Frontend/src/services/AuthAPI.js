@@ -35,12 +35,36 @@ apiClient.interceptors.response.use(
   }
 )
 
+// Hàm helper để xử lý token và thông tin user (tái sử dụng cho cả login thường và Google login)
+const processTokenAndUserInfo = (token, fallbackEmail = '') => {
+  localStorage.setItem('authToken', token)
+  
+  try {
+    const tokenPayload = JSON.parse(atob(token.split('.')[1]))
+    const userInfo = {
+      id: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
+      email: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || fallbackEmail,
+      fullName: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
+      roleId: parseInt(tokenPayload['role_id'] || 2),
+      exp: tokenPayload.exp
+    }
+    localStorage.setItem('userInfo', JSON.stringify(userInfo))
+    return userInfo
+  } catch (decodeError) {
+    // Fallback nếu decode thất bại
+    const userInfo = {
+      email: fallbackEmail
+    }
+    localStorage.setItem('userInfo', JSON.stringify(userInfo))
+    return userInfo
+  }
+}
+
 // API functions
 export const authAPI = {
   // Đăng ký
   register: async (registerData) => {
     try {
-      console.log('Register API call:', registerData)
       const response = await apiClient.post('/Auth/register', {
         fullName: registerData.fullName,
         email: registerData.email,
@@ -59,34 +83,14 @@ export const authAPI = {
   // Đăng nhập
   login: async (loginData) => {
     try {
-      console.log('Login API call:', loginData)
       const response = await apiClient.post('/Auth/login', {
         email: loginData.email,
         password: loginData.password
       })
       
       if (response.data.token) {
-        // Lưu token
-        localStorage.setItem('authToken', response.data.token)
-        
-        // Decode JWT để lấy thông tin user (simple decode without verification)
-        try {
-          const tokenPayload = JSON.parse(atob(response.data.token.split('.')[1]))
-          const userInfo = {
-            id: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
-            email: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || loginData.email,
-            fullName: tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
-            exp: tokenPayload.exp
-          }
-          localStorage.setItem('userInfo', JSON.stringify(userInfo))
-        } catch (decodeError) {
-          // Fallback nếu decode thất bại
-          const userInfo = {
-            email: loginData.email
-          }
-          localStorage.setItem('userInfo', JSON.stringify(userInfo))
-        }
-        
+        // Sử dụng hàm helper để xử lý token
+        processTokenAndUserInfo(response.data.token, loginData.email)
         return { success: true, data: response.data }
       }
       
@@ -96,6 +100,29 @@ export const authAPI = {
       return { 
         success: false, 
         error: error.response?.data?.message || 'Đăng nhập thất bại' 
+      }
+    }
+  },
+
+  // Đăng nhập bằng Google
+  loginWithGoogle: async (idToken) => {
+    try {
+      const response = await apiClient.post('/Auth/googlelogin', {
+        idToken: idToken
+      })
+      
+      if (response.data.token) {
+        // Sử dụng hàm helper để xử lý token
+        processTokenAndUserInfo(response.data.token)
+        return { success: true, data: response.data }
+      }
+      
+      return { success: false, error: 'Không nhận được token' }
+    } catch (error) {
+      console.error('Google login error:', error)
+      return { 
+        success: false, 
+        error: error.response?.data || 'Đăng nhập Google thất bại' 
       }
     }
   },
@@ -116,6 +143,29 @@ export const authAPI = {
   getUserInfo: () => {
     const userInfo = localStorage.getItem('userInfo')
     return userInfo ? JSON.parse(userInfo) : null
+  },
+
+  // Lấy thông tin user profile từ server
+  getUserProfile: async () => {
+    try {
+      const response = await apiClient.get('/User/GetUserProfile')
+      
+      // Cập nhật thông tin user vào localStorage
+      const userInfo = {
+        id: response.data.id,
+        fullName: response.data.fullName,
+        email: response.data.email
+      }
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+      
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Get user profile error:', error)
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Không thể lấy thông tin người dùng'
+      }
+    }
   }
 }
 

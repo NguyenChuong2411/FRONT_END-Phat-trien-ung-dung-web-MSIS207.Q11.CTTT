@@ -9,6 +9,33 @@ const apiClient = axios.create({
   }
 });
 
+// Interceptor để tự động thêm JWT token vào headers
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+);
+
+// Interceptor để xử lý response và errors
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token hết hạn hoặc không hợp lệ
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('userInfo')
+      // Redirect về login page
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+);
+
 // Hàm để lấy danh sách tất cả bài thi
 export const fetchAllTests = async () => {
   try {
@@ -21,13 +48,13 @@ export const fetchAllTests = async () => {
   }
 };
 
-// Hàm để lấy chi tiết một bài thi theo ID
-export const fetchTestDetails = async (testId) => {
+// Hàm để lấy chi tiết một bài thi theo ID (Reading)
+export const fetchReadingTestDetails = async (testId) => {
   try {
     const response = await apiClient.get(`/OnlineTest/GetTestDetails/${testId}`);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching details for test ${testId}:`, error);
+    console.error(`Error fetching reading test details for test ${testId}:`, error);
     throw error;
   }
 };
@@ -41,6 +68,11 @@ export const fetchListeningTestDetails = async (testId) => {
     console.error(`Error fetching listening test details for test ${testId}:`, error);
     throw error;
   }
+};
+
+// Hàm để lấy chi tiết một bài thi theo ID (deprecated - dùng fetchReadingTestDetails thay thế)
+export const fetchTestDetails = async (testId) => {
+  return await fetchReadingTestDetails(testId);
 };
 
 // Hàm để nộp bài thi
@@ -75,6 +107,19 @@ export const fetchTestResult = async (attemptId) => {
     return response.data;
   } catch (error) {
     console.error(`Error fetching test result for attempt ${attemptId}:`, error);
+    throw error;
+  }
+};
+
+// Hàm để lấy lịch sử làm bài của người dùng
+export const fetchTestHistory = async () => {
+  try {
+    // Backend endpoint: GET /api/OnlineTest/GetMyTestHistory
+    // AuthAPI interceptor sẽ tự động đính kèm Token
+    const response = await apiClient.get('/OnlineTest/GetMyTestHistory');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching test history:', error);
     throw error;
   }
 };

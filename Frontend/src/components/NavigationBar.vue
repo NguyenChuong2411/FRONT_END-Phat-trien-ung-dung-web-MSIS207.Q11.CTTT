@@ -25,21 +25,26 @@
             Luyện thi Online
           </router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="isAdmin">
+          <router-link to="/test-management" class="nav-link" :class="{ active: isActiveRoute('/test-management') }">
+            Quản lý đề thi
+          </router-link>
+        </li>
+        <!-- <li class="nav-item">
           <router-link to="/news" class="nav-link" :class="{ active: isActiveRoute('/news') }">
             Tin tức
           </router-link>
-        </li>
-        <li class="nav-item">
+        </li> -->
+        <!-- <li class="nav-item">
           <router-link to="/sharing" class="nav-link" :class="{ active: isActiveRoute('/sharing') }">
             Góc chia sẻ
           </router-link>
-        </li>
-        <li class="nav-item">
+        </li> -->
+        <!-- <li class="nav-item">
           <router-link to="/flashcard" class="nav-link" :class="{ active: isActiveRoute('/flashcard') }">
             Học Flashcard
           </router-link>
-        </li>
+        </li> -->
         <li class="nav-item">
           <router-link to="/contact" class="nav-link" :class="{ active: isActiveRoute('/contact') }">
             Liên hệ
@@ -58,7 +63,7 @@
         </div>
         
 
-        <div class="dropdown-menu" :class="{ 'show': isAccountDropdownOpen }">
+        <div class="nav-dropdown-menu" :class="{ 'show': isAccountDropdownOpen }">
           <div v-if="isLoggedIn" class="dropdown-content">
             <div class="dropdown-header">
               <div class="user-avatar">
@@ -128,6 +133,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { authAPI } from '@/services/AuthAPI.js'
 import './NavigationBar.css'
 
+const isAdmin = computed(() => {
+  return isLoggedIn.value && userRole.value === 1;
+})
+
 // Reactive data
 const isMobileMenuOpen = ref(false)
 const isAccountDropdownOpen = ref(false)
@@ -138,6 +147,7 @@ const router = useRouter()
 const isLoggedIn = ref(false)
 const userName = ref('')
 const userEmail = ref('')
+const userRole = ref(2)
 
 // Khởi tạo trạng thái đăng nhập khi component được mount
 onMounted(() => {
@@ -152,17 +162,40 @@ onUnmounted(() => {
 })
 
 // Hàm cập nhật trạng thái đăng nhập
-const updateAuthState = () => {
+const updateAuthState = async () => {
   isLoggedIn.value = authAPI.isAuthenticated()
   if (isLoggedIn.value) {
-    const userInfo = authAPI.getUserInfo()
+    // Cố gắng lấy thông tin từ localStorage trước
+    let userInfo = authAPI.getUserInfo()
+    
     if (userInfo) {
-      userName.value = userInfo.fullName || userInfo.email.split('@')[0]
-      userEmail.value = userInfo.email
+      userName.value = userInfo.fullName || userInfo.email?.split('@')[0] || 'User'
+      userEmail.value = userInfo.email || ''
+      userRole.value = userInfo.roleId || 2
+    }
+    
+    // Lấy thông tin mới nhất từ server để đồng bộ
+    try {
+      const result = await authAPI.getUserProfile()
+      if (result.success) {
+        userName.value = result.data.fullName || result.data.email?.split('@')[0] || 'User'
+        userEmail.value = result.data.email || ''
+        if (result.data.roleId) {
+            userRole.value = result.data.roleId;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error)
+      // Nếu lỗi và chưa có thông tin user, dùng thông tin từ localStorage
+      if (!userInfo) {
+        userName.value = 'User'
+        userEmail.value = ''
+      }
     }
   } else {
     userName.value = ''
     userEmail.value = ''
+    userRole.value = 2
   }
 }
 
@@ -171,6 +204,7 @@ const navigationItems = [
   { name: 'Trang chủ', path: '/' },
   { name: 'Về Enly', path: '/about' },
   { name: 'Luyện thi Online', path: '/online-test' },
+  { name: 'Quản lý đề thi', path: '/test-management' },
   { name: 'Tin tức', path: '/news' },
   { name: 'Góc chia sẻ', path: '/sharing' },
   { name: 'Học Flashcard', path: '/flashcard' },
@@ -231,9 +265,8 @@ const handleLogout = () => {
 
 const goToProfile = () => {
   closeAccountDropdown()
-  // TODO: Navigate to profile page
-  console.log('Navigate to profile')
-  // router.push('/profile')
+  // Navigate to profile page
+  router.push('/profile')
 }
 
 const goToSettings = () => {
@@ -245,9 +278,8 @@ const goToSettings = () => {
 
 const goToHistory = () => {
   closeAccountDropdown()
-  // TODO: Navigate to test history page
-  console.log('Navigate to test history')
-  // router.push('/test-history')
+  // Navigate to test history page
+  router.push('/test-history')
 }
 
 // Handle click outside to close dropdowns

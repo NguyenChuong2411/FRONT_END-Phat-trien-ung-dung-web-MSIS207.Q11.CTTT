@@ -8,7 +8,6 @@
 
     <!-- Error State -->
     <div v-else-if="error" class="error-container">
-      <div class="error-icon">❌</div>
       <h2 class="error-title">Có lỗi xảy ra</h2>
       <p class="error-message">{{ error }}</p>
       <button class="back-btn" @click="goBack">Quay lại</button>
@@ -160,152 +159,113 @@ const error = ref(null)
 const showReview = ref(false)
 const activeFilter = ref('all')
 
-// Get attempt ID from route params
-const attemptId = route.params.attemptId
+const attemptId = route.params.attemptId;
 
-// Computed properties
-const correctCount = computed(() => {
-  if (!resultData.value) return 0
-  return resultData.value.questions.filter(q => q.isCorrect).length
-})
-
-const incorrectCount = computed(() => {
-  if (!resultData.value) return 0
-  return resultData.value.questions.filter(q => !q.isCorrect).length
-})
+// Computed Properties
+const correctCount = computed(() => resultData.value?.questions.filter(q => q.isCorrect).length ?? 0);
+const incorrectCount = computed(() => resultData.value?.questions.filter(q => !q.isCorrect).length ?? 0);
 
 const filteredQuestions = computed(() => {
-  if (!resultData.value) return []
-  
+  if (!resultData.value) return [];
   switch (activeFilter.value) {
-    case 'correct':
-      return resultData.value.questions.filter(q => q.isCorrect)
-    case 'incorrect':
-      return resultData.value.questions.filter(q => !q.isCorrect)
-    default:
-      return resultData.value.questions
+    case 'correct': return resultData.value.questions.filter(q => q.isCorrect);
+    case 'incorrect': return resultData.value.questions.filter(q => !q.isCorrect);
+    default: return resultData.value.questions;
   }
-})
+});
 
-// Methods
-const getScoreClass = () => {
-  if (!resultData.value) return ''
+// --- METHODS ---
+const formatDisplayAnswer = (answerData) => {
+  // Trả về 'N/A' nếu không có dữ liệu
+  if (answerData === null || answerData === undefined) return 'N/A';
   
-  const percentage = (resultData.value.score / resultData.value.totalQuestions) * 100
-  if (percentage >= 80) return 'excellent'
-  if (percentage >= 60) return 'good'
-  if (percentage >= 40) return 'average'
-  return 'poor'
-}
+  // Nếu là chuỗi đơn giản (đã được backend xử lý)
+  if (typeof answerData === 'string') return answerData;
 
-const getScoreStatus = () => {
-  if (!resultData.value) return ''
-  
-  const percentage = (resultData.value.score / resultData.value.totalQuestions) * 100
-  if (percentage >= 80) return 'Xuất sắc!'
-  if (percentage >= 60) return 'Tốt'
-  if (percentage >= 40) return 'Trung bình'
-  return 'Cần cải thiện'
-}
+  // Nếu là object (dữ liệu JSON từ backend)
+  if (typeof answerData === 'object') {
+    // Ưu tiên 1: Xử lý { "answer": "A" } hoặc { "answer": "text" }
+    if (answerData.hasOwnProperty('answer')) {
+      return answerData.answer;
+    }
+    
+    // Ưu tiên 2: Xử lý { "answers": ["A", "C"] } cho câu hỏi nhiều đáp án
+    if (answerData.hasOwnProperty('answers') && Array.isArray(answerData.answers)) {
+        return answerData.answers.join(', ');
+    }
+
+    // Ưu tiên 3: Xử lý câu hỏi dạng bảng { "1": "value", "2": "value" }
+    const keys = Object.keys(answerData);
+    if (keys.length > 0) {
+      // Định dạng lại để dễ đọc hơn: (1): value; (2): value
+      return keys.map(key => `(${key}): ${answerData[key]}`).join('; ');
+    }
+    
+    // Nếu là object rỗng {}
+    return 'Chưa trả lời';
+  }
+
+  // Trường hợp dự phòng, chuyển thành chuỗi
+  return String(answerData);
+};
+
 
 const formatUserAnswer = (question) => {
-  if (!question.userAnswer) return 'Chưa trả lời'
-  
-  try {
-    const answer = question.userAnswer
-    
-    if (question.questionType === 'table') {
-      // Format table answers
-      const tableAnswers = typeof answer === 'string' ? JSON.parse(answer) : answer
-      return Object.entries(tableAnswers)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(', ')
-    }
-    
-    if (question.questionType === 'multiple-choice-multiple-answer') {
-      // Format multiple answers
-      const answers = Array.isArray(answer) ? answer : JSON.parse(answer)
-      return answers.join(', ')
-    }
-    
-    // Single answer
-    return typeof answer === 'string' ? answer : JSON.stringify(answer)
-  } catch (e) {
-    return JSON.stringify(question.userAnswer)
-  }
-}
-
+  return question.userAnswer ? formatDisplayAnswer(question.userAnswer) : 'Chưa trả lời';
+};
 const formatCorrectAnswer = (question) => {
-  if (!question.correctAnswer) return 'Không có đáp án'
-  
-  try {
-    const answer = question.correctAnswer
-    
-    if (question.questionType === 'table') {
-      // Format table correct answers
-      const tableAnswers = typeof answer === 'string' ? JSON.parse(answer) : answer
-      return Object.entries(tableAnswers)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(', ')
-    }
-    
-    if (question.questionType === 'multiple-choice-multiple-answer') {
-      // Format multiple correct answers
-      const answers = answer.answers || answer
-      return Array.isArray(answers) ? answers.join(', ') : answers
-    }
-    
-    // Single correct answer
-    return answer.answer || answer
-  } catch (e) {
-    return JSON.stringify(question.correctAnswer)
-  }
-}
+  return question.correctAnswer ? formatDisplayAnswer(question.correctAnswer) : 'Không có đáp án';
+};
+
+const getScoreClass = () => {
+  if (!resultData.value) return '';
+  const percentage = (resultData.value.score / resultData.value.totalQuestions) * 100;
+  if (percentage >= 80) return 'excellent';
+  if (percentage >= 60) return 'good';
+  if (percentage >= 40) return 'average';
+  return 'poor';
+};
+
+const getScoreStatus = () => {
+  if (!resultData.value) return '';
+  const percentage = (resultData.value.score / resultData.value.totalQuestions) * 100;
+  if (percentage >= 80) return 'Xuất sắc!';
+  if (percentage >= 60) return 'Tốt';
+  if (percentage >= 40) return 'Trung bình';
+  return 'Cần cải thiện';
+};
 
 const getOptionClass = (option, question) => {
-  const userAnswer = question.userAnswer
-  const correctAnswer = question.correctAnswer?.answer
+  const userAnswer = formatDisplayAnswer(question.userAnswer);
+  const correctAnswer = formatDisplayAnswer(question.correctAnswer);
   
-  const classes = []
+  const classes = [];
   
-  // Check if this option was selected by user
   if (userAnswer === option.optionLabel) {
-    classes.push('selected')
-    if (question.isCorrect) {
-      classes.push('user-correct')
-    } else {
-      classes.push('user-incorrect')
-    }
+    classes.push('selected', question.isCorrect ? 'user-correct' : 'user-incorrect');
   }
   
-  // Check if this is the correct answer
   if (correctAnswer === option.optionLabel) {
-    classes.push('correct-option')
+    classes.push('correct-option');
   }
   
-  return classes
-}
+  return classes;
+};
 
-const reviewAnswers = () => {
-  showReview.value = !showReview.value
-}
+const reviewAnswers = () => { showReview.value = !showReview.value; };
+const goBack = () => { router.push('/online-test'); };
 
-const goBack = () => {
-  router.push('/online-test')
-}
-
-// Lifecycle
+// Lifecycle Hook
 onMounted(async () => {
   try {
-    const result = await fetchTestResult(attemptId)
-    resultData.value = result
+    resultData.value = await fetchTestResult(attemptId);
   } catch (err) {
-    error.value = 'Không thể tải kết quả bài thi. Vui lòng thử lại sau.'
-    console.error('Error fetching test result:', err)
+    error.value = 'Không thể tải kết quả bài thi. Vui lòng thử lại sau.';
+    console.error('Error fetching test result:', err);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-})
+});
 </script>
 
 <style scoped>
@@ -355,11 +315,6 @@ onMounted(async () => {
   color: white;
   text-align: center;
   padding: 2rem;
-}
-
-.error-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
 }
 
 .error-title {

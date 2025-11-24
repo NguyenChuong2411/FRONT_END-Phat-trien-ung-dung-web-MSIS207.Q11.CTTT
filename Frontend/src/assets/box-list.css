@@ -26,11 +26,11 @@
   overflow: hidden;
 }
 
-.box-list-item:hover {
+/* .box-list-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  /* border-color: #3b82f6; */
-}
+  border-color: #3b82f6;
+} */
 
 /* Box header section */
 .box-header {
@@ -80,33 +80,6 @@
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 1rem;
-}
-
-/* Box stats/info section */
-.box-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.box-stat-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.box-stat-icon {
-  width: 1rem;
-  height: 1rem;
-  color: #9ca3af;
-}
-
-.box-stat-value {
-  font-weight: 500;
-  color: #374151;
 }
 
 /* Box metadata (duration, questions, etc.) */
@@ -276,11 +249,6 @@
   
   .box-meta {
     grid-template-columns: 1fr;
-  }
-  
-  .box-stats {
-    flex-direction: column;
-    gap: 0.5rem;
   }
 }
 

@@ -2,7 +2,7 @@
   <div v-if="isOpen" class="test-detail-modal-overlay" @click="handleOverlayClick">
     <div class="test-detail-modal" @click.stop>
       <!-- Modal Header -->
-      <div class="modal-header">
+      <div class="test-detail-header">
         <div class="header-content">
           <h2 class="test-title">{{ testData.title }}</h2>
           <button class="close-btn" @click="closeModal">
@@ -16,14 +16,14 @@
         <!-- Test Type Badges -->
         <div class="test-badges">
           <span class="badge badge-primary">{{ testData.type }}</span>
-          <span class="badge badge-secondary">Reading</span>
+          <span v-if="skillName" class="badge badge-secondary">{{ skillName }}</span>
         </div>
 
         <!-- Test Info -->
         <div class="test-info">
           <div class="info-item">
             <span class="info-label">Thời gian làm bài:</span>
-            <span class="info-value">{{ testData.duration }} | 3 phần thi | {{ testData.questions }}</span>
+            <span class="info-value">{{ testData.duration }} | {{ partCount }} phần thi | {{ testData.questions }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">Số người đã luyện tập đề thi này:</span>
@@ -64,18 +64,18 @@
                 <h4>Pro tips: Hình thức luyện tập từng phần và chọn mức thời gian phù hợp sẽ giúp bạn tập trung vào giải quyết các câu hỏi thay vì phải chịu áp lực hoàn thành bài thi.</h4>
               </div>
               
-              <div class="practice-options">
+              <div class="practice-options" v-if="testSections.length > 0">
                 <!-- MultiSelect for Test Sections -->
                 <MultiSelect
                   v-model="selectedSections"
                   :options="testSections"
-                  label="Chọn phần thi bạn muốn làm"
-                  placeholder="Chọn các phần thi..."
+                  :label="`Chọn ${skillName === 'Listening' ? 'part' : 'phần'} thi bạn muốn làm`"
+                  :placeholder="`Chọn các ${skillName === 'Listening' ? 'part' : 'phần'} thi...`"
                   item-key="id"
                   item-label="name"
                   :searchable="false"
                   :show-select-all="true"
-                  select-all-text="Chọn tất cả phần thi"
+                  :select-all-text="`Chọn tất cả ${skillName === 'Listening' ? 'part' : 'phần'} thi`"
                   :close-on-select="false"
                   class="sections-multiselect"
                 />
@@ -93,6 +93,11 @@
                 <button class="start-practice-btn" @click="startPractice">
                   Luyện tập
                 </button>
+              </div>
+              
+              <!-- No data message -->
+              <div v-else class="no-data-message">
+                <p>Không có dữ liệu chi tiết cho bài thi này.</p>
               </div>
             </div>
           </div>
@@ -138,8 +143,10 @@
 import { ref, defineProps, defineEmits, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MultiSelect from '../../../components/MultiSelect.vue'
+import { useNotification } from '@/composables/useNotification'
 
 const router = useRouter()
+const { warning } = useNotification()
 
 const props = defineProps({
   isOpen: {
@@ -165,19 +172,67 @@ const activeTab = ref('practice')
 const selectedTime = ref('')
 const selectedSections = ref([])
 
-// Dynamic test sections from testData
-const testSections = computed(() => {
-  if (!props.testData?.passages) {
-    return []
+// Lấy SkillName
+const skillName = computed(() => {
+  // Kiểm tra nếu có cả listening và reading
+  const hasListening = props.testData?.parts && props.testData.parts.length > 0
+  const hasReading = props.testData?.passages && props.testData.passages.length > 0
+  
+  if (hasListening && hasReading) {
+    return 'Listening & Reading'
+  } else if (hasListening) {
+    return 'Listening'
+  } else if (hasReading) {
+    return 'Reading' 
   }
   
-  const sections = props.testData.passages.map(passage => ({
-    id: passage.id,
-    name: `${passage.title} (${passage.questions?.length || 0} câu hỏi)`,
-    questions: passage.questions?.length || 0
-  }))
-  return sections
-})
+  return props.testData?.skillName || 'Practice';
+});
+
+// Lấy SkillTypeId
+const skillTypeId = computed(() => {
+  return props.testData?.skillTypeId;
+});
+
+// Tính toán các phần this
+const testSections = computed(() => {
+  const sections = [];
+  
+  // Thêm Listening Parts nếu có
+  if (props.testData.parts && props.testData.parts.length > 0) {
+    const listeningSection = props.testData.parts.map(part => ({
+      id: `listening_${part.id}`,
+      name: `Part ${part.partNumber}: ${part.title} (${getTotalQuestionsInPart(part)} câu hỏi)`,
+      questions: getTotalQuestionsInPart(part),
+      type: 'listening'
+    }));
+    sections.push(...listeningSection);
+  }
+  
+  // Thêm Reading Passages nếu có  
+  if (props.testData.passages && props.testData.passages.length > 0) {
+    const readingSection = props.testData.passages.map(passage => ({
+      id: `reading_${passage.id}`,
+      name: `${passage.title} (${passage.questions?.length || 0} câu hỏi)`,
+      questions: passage.questions?.length || 0,
+      type: 'reading'
+    }));
+    sections.push(...readingSection);
+  }
+
+  return sections;
+});
+
+// Đếm số phần thi
+const partCount = computed(() => {
+  return testSections.value.length;
+});
+
+// --- HÀM HELPER (cho Listening) ---
+const getTotalQuestionsInPart = (part) => {
+  if (!part.questionGroups) return 0;
+  return part.questionGroups.reduce((total, group) => total + (group.questions?.length || 0), 0);
+};
 
 // Discussion data (mock)
 const discussionCount = computed(() => Math.floor(Math.random() * 50) + 10)
@@ -196,7 +251,7 @@ const handleOverlayClick = (e) => {
 
 const startPractice = () => {
   if (selectedSections.value.length === 0) {
-    alert('Vui lòng chọn ít nhất một phần thi để luyện tập')
+    warning('Vui lòng chọn ít nhất một phần thi để luyện tập', 'Chưa chọn phần thi')
     return
   }
   
@@ -204,7 +259,17 @@ const startPractice = () => {
   emit('close')
 
   // Navigate to practice mode with selected sections
-  const sectionIds = selectedSections.value.map(section => String(section.id)).join(',')
+  // Extract actual IDs (remove listening_/reading_ prefix)
+  const sectionIds = selectedSections.value.map(section => {
+    const id = String(section.id)
+    if (id.startsWith('listening_') || id.startsWith('reading_')) {
+      return id.split('_')[1]
+    }
+    return id
+  }).join(',')
+  
+  // Xác định skill type - cho hybrid test, mặc định là listening nếu có audio
+  const skillType = (props.testData.audioUrl || props.testData.parts?.length > 0) ? 'listening' : 'reading'
   
   router.push({
     path: `/online-test/full-test/${props.testData.id}`,
@@ -213,7 +278,8 @@ const startPractice = () => {
       sections: sectionIds,
       timeLimit: selectedTime.value || '',
       title: props.testData.title,
-      type: props.testData.type
+      type: props.testData.type,
+      skill: skillType
     }
   })
 }
@@ -222,13 +288,17 @@ const startFullTest = () => {
   // Close modal first
   emit('close')
   
+  // Xác định skill type - cho hybrid test, mặc định là listening nếu có audio
+  const skillType = (props.testData.audioUrl || props.testData.parts?.length > 0) ? 'listening' : 'reading'
+  
   // Navigate to full test page
   router.push({
     path: `/online-test/full-test/${props.testData.id}`,
     query: {
       mode: 'fulltest',
       title: props.testData.title,
-      type: props.testData.type
+      type: props.testData.type,
+      skill: skillType
     }
   })
 }
@@ -269,7 +339,7 @@ const joinDiscussion = () => {
 }
 
 /* Modal Header */
-.modal-header {
+.test-detail-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 2rem;
@@ -536,6 +606,21 @@ const joinDiscussion = () => {
   color: #6b7280;
 }
 
+/* No Data Message */
+.no-data-message {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.no-data-message p {
+  margin: 0;
+  font-style: italic;
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .test-detail-modal-overlay {
@@ -550,7 +635,7 @@ const joinDiscussion = () => {
     border-radius: 1rem 1rem 0 0;
   }
   
-  .modal-header {
+  .test-detail-header {
     padding: 1.5rem;
     border-radius: 1rem 1rem 0 0;
   }
