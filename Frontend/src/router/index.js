@@ -65,6 +65,12 @@ const router = createRouter({
       beforeEnter: requireAuth, // Yêu cầu đăng nhập
     },
     {
+      path: '/test-history',
+      name: 'test-history',
+      component: () => import('../pages/profile/TestHistoryPage.vue'),
+      beforeEnter: requireAuth, // Yêu cầu đăng nhập
+    },
+    {
       path: '/test-management',
       name: 'test-management',
       component: () => import('../pages/test-management/TestManagement.vue'),

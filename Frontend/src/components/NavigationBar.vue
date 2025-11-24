@@ -25,7 +25,7 @@
             Luyện thi Online
           </router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="isAdmin">
           <router-link to="/test-management" class="nav-link" :class="{ active: isActiveRoute('/test-management') }">
             Quản lý đề thi
           </router-link>
@@ -133,6 +133,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { authAPI } from '@/services/AuthAPI.js'
 import './NavigationBar.css'
 
+const isAdmin = computed(() => {
+  return isLoggedIn.value && userRole.value === 1;
+})
+
 // Reactive data
 const isMobileMenuOpen = ref(false)
 const isAccountDropdownOpen = ref(false)
@@ -143,6 +147,7 @@ const router = useRouter()
 const isLoggedIn = ref(false)
 const userName = ref('')
 const userEmail = ref('')
+const userRole = ref(2)
 
 // Khởi tạo trạng thái đăng nhập khi component được mount
 onMounted(() => {
@@ -166,6 +171,7 @@ const updateAuthState = async () => {
     if (userInfo) {
       userName.value = userInfo.fullName || userInfo.email?.split('@')[0] || 'User'
       userEmail.value = userInfo.email || ''
+      userRole.value = userInfo.roleId || 2
     }
     
     // Lấy thông tin mới nhất từ server để đồng bộ
@@ -174,6 +180,9 @@ const updateAuthState = async () => {
       if (result.success) {
         userName.value = result.data.fullName || result.data.email?.split('@')[0] || 'User'
         userEmail.value = result.data.email || ''
+        if (result.data.roleId) {
+            userRole.value = result.data.roleId;
+        }
       }
     } catch (error) {
       console.error('Failed to fetch user profile:', error)
@@ -186,6 +195,7 @@ const updateAuthState = async () => {
   } else {
     userName.value = ''
     userEmail.value = ''
+    userRole.value = 2
   }
 }
 
@@ -268,9 +278,8 @@ const goToSettings = () => {
 
 const goToHistory = () => {
   closeAccountDropdown()
-  // TODO: Navigate to test history page
-  console.log('Navigate to test history')
-  // router.push('/test-history')
+  // Navigate to test history page
+  router.push('/test-history')
 }
 
 // Handle click outside to close dropdowns
