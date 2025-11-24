@@ -29,7 +29,6 @@
 
         <!-- Empty State -->
         <div v-else-if="historyList.length === 0" class="empty-state">
-          <i class="fa-solid fa-clipboard-list"></i>
           <h3>Bạn chưa làm bài thi nào</h3>
           <p>Hãy bắt đầu luyện tập ngay để nâng cao kỹ năng!</p>
           <button class="btn-primary" @click="goToPractice">Đến trang luyện thi</button>
