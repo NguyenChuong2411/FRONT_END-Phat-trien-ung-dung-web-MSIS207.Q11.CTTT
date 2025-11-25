@@ -3,7 +3,7 @@ import axios from 'axios';
 // Cấu hình một instance axios với URL cơ sở của backend
 // Thay đổi port 7123 thành port của backend .NET của bạn nếu cần
 const apiClient = axios.create({
-  baseURL: 'https://localhost:7088/api',
+  baseURL: import.meta.env.VITE_TEST_API_URL,
   headers: {
     'Content-Type': 'application/json'
   }
