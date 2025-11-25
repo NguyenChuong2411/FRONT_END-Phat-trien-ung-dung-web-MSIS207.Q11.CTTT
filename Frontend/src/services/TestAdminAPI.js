@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Cấu hình axios instance cho Online Test Service
 const apiClient = axios.create({
-  baseURL: 'https://localhost:7088/api/onlineTest/TestAdmin',
+  baseURL: import.meta.env.VITE_TEST_ADMIN_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },

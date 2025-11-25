@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Cấu hình axios instance
 const apiClient = axios.create({
-  baseURL: 'https://localhost:7263/api',
+  baseURL: import.meta.env.VITE_AUTH_API_URL,
   headers: {
     'Content-Type': 'application/json'
   }
