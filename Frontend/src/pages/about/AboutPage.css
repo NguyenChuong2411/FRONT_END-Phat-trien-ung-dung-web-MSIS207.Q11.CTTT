@@ -135,11 +135,10 @@ p, h1, h2, h3, h4, h5, h6 {
 
 .view-main {
   display: grid;
-  grid-template-columns: 1fr auto 1fr; /* 3 cột: trái - giữa (ảnh) - phải */
+  grid-template-columns: 1fr auto 1fr; /* 3 cột đều nhau, cột giữa tự co theo ảnh */
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  max-width: 1200px;
+  gap: 3rem;
+  max-width: 1300px;
   width: 100%;
   padding: 0 2rem;
 }
@@ -154,23 +153,21 @@ p, h1, h2, h3, h4, h5, h6 {
   font-size: 2.5rem;
   font-weight: bold;
   color: #F6871F;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   text-align: center;
   font-family: 'Montserrat', var(--font-family-base);
 }
 
 .view-desc {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: #333;
-  line-height: 1.7;
+  line-height: 1.8;
   text-align: justify;
   font-family: 'Montserrat', var(--font-family-base);
 }
 
+/* Hình ảnh */
 .view-image-wrapper {
-  position: relative;
-  width: 450px;
-  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -178,21 +175,142 @@ p, h1, h2, h3, h4, h5, h6 {
 
 .view-center-img {
   width: 100%;
+  max-width: 480px;     /* bạn có thể điều chỉnh kích thước ảnh */
   height: auto;
-  object-fit: cover;
+  object-fit: contain;
+  border-radius: 12px;
 }
 
-/* Responsive: Khi màn nhỏ thì xếp dọc */
+/* ====================== RESPONSIVE ====================== */
 @media (max-width: 900px) {
   .view-main {
     grid-template-columns: 1fr;
+    gap: 2.5rem;
     text-align: center;
   }
 
+  /* Thứ tự trên mobile: Hình → Tầm nhìn → Sứ mệnh */
+  .view-image-wrapper { order: 1; }
+  .vision-card        { order: 2; }
+  .mission-card       { order: 3; }
+
   .view-image-wrapper {
-    width: 280px;
-    height: 280px;
-    margin: 2rem auto;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .view-title {
+    font-size: 2rem;
+  }
+
+  .view-desc {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+}
+
+/* Nếu muốn đẹp hơn trên mobile rất nhỏ */
+@media (max-width: 480px) {
+  .view-title {
+    font-size: 1.8rem;
+  }
+  .view-image-wrapper {/* View section */
+.view-section {
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.view-main {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* 3 cột đều nhau, cột giữa tự co theo ảnh */
+  align-items: center;
+  gap: 3rem;
+  max-width: 1300px;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.view-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.view-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #F6871F;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.view-desc {
+  font-size: 1.25rem;
+  color: #333;
+  line-height: 1.8;
+  text-align: justify;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Hình ảnh */
+.view-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.view-center-img {
+  width: 100%;
+  max-width: 480px;     /* bạn có thể điều chỉnh kích thước ảnh */
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* ====================== RESPONSIVE ====================== */
+@media (max-width: 900px) {
+  .view-main {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    text-align: center;
+  }
+
+  /* Thứ tự trên mobile: Hình → Tầm nhìn → Sứ mệnh */
+  .view-image-wrapper { order: 1; }
+  .vision-card        { order: 2; }
+  .mission-card       { order: 3; }
+
+  .view-image-wrapper {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .view-title {
+    font-size: 2rem;
+  }
+
+  .view-desc {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+}
+
+/* Nếu muốn đẹp hơn trên mobile rất nhỏ */
+@media (max-width: 480px) {
+  .view-title {
+    font-size: 1.8rem;
+  }
+  .view-image-wrapper {
+    max-width: 280px;
+  }
+}
+    max-width: 280px;
   }
 }
 
@@ -356,11 +474,12 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 .story-title {
-  font-size: 3rem;
-  color: #ff9735;
+  font-size: 5rem;
+  color: #ffffff;
   font-weight: bold;
   text-align: center;
   margin-bottom: 1rem;
+  margin-top: -5rem;
 }
 
 .story-subtitle {
@@ -509,7 +628,7 @@ p, h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   max-width: 1400px;
   margin: 0 4rem 0 6rem;
-  padding: 5rem 2rem 0 2rem;
+  padding: 0rem 2rem 0 2rem;
 }
 
 .info-logo img {
