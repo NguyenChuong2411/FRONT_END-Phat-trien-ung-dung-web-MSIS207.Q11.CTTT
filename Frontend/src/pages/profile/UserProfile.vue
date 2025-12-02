@@ -19,7 +19,6 @@
 
         <!-- Error State -->
         <div v-else-if="error" class="error-container">
-          <div class="error-icon">⚠️</div>
           <h3 class="error-title">Có lỗi xảy ra</h3>
           <p class="error-message">{{ error }}</p>
           <button class="retry-btn" @click="loadUserProfile">Thử lại</button>
@@ -36,7 +35,6 @@
               <div class="profile-info">
                 <h2 class="profile-name">{{ userProfile?.fullName || 'Chưa cập nhật' }}</h2>
                 <p class="profile-email">{{ userProfile?.email || '' }}</p>
-                <span class="profile-status">Tài khoản đã xác thực</span>
               </div>
             </div>
 
@@ -62,7 +60,7 @@
               </div>
 
               <!-- Future expansion placeholder -->
-              <div class="future-sections">
+              <!-- <div class="future-sections">
                 <div class="coming-soon">
                   <h4>Sắp có thêm:</h4>
                   <ul>
@@ -72,17 +70,17 @@
                     <li>Lịch sử hoạt động</li>
                   </ul>
                 </div>
-              </div>
+              </div> -->
             </div>
 
             <!-- Profile Actions -->
             <div class="profile-actions">
               <button class="action-btn primary" @click="refreshProfile">
-                Làm mới thông tin
+                Tải lại thông tin
               </button>
-              <button class="action-btn secondary" @click="goBack">
+              <!-- <button class="action-btn secondary" @click="goBack">
                 Quay lại
-              </button>
+              </button> -->
             </div>
           </div>
         </div>
@@ -155,7 +153,7 @@ onMounted(() => {
 <style scoped>
 .user-profile-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   font-family: var(--font-family-base, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
 }
 
