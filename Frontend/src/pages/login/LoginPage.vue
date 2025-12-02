@@ -459,7 +459,7 @@ watch(isRegisterMode, () => {
 <style scoped>
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2a64d8 0%, #87c7ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;

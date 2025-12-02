@@ -64,7 +64,7 @@
       <div class="container">
         <h2 class="reason-title">Vì sao chọn Enly?</h2>
         <div class="reason-grid">
-          <div class="reason-item">
+          <div class="reason-item blue">
             <div class="reason-image">
               <img src="@/images/1_homepage/_trải nghiệm.png" alt="Tiếng Anh trải nghiệm" />
             </div>
@@ -72,7 +72,7 @@
             <p class="reason-item-desc">
               Enly có lộ trình áp dụng xuyên suốt đánh giá, theo dõi học sinh liên tục, cá nhân hóa theo nhu các chương trình tiếng Anh của ta trong lúc với mục tiêu dịch, giúp học sinh đạt kết quả đầu ra cao, nền tảng cho các bước phát triển học tập và sự nghiệp.
             </p>
-          </div>
+          </div>  
           <div class="reason-item">
             <div class="reason-image">
               <img src="@/images/1_homepage/_bản ngữ.png" alt="100% giáo viên bản ngữ" />

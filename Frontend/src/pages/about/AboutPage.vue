@@ -119,9 +119,7 @@
               <img src="@\assets\logo.svg" alt="Logo Enly" />
             </div>
             <div class="info-text">
-              <p>Logo Enly vừa là biểu tượng thương hiệu, vừa mang ý nghĩa thể hiện tâm nhìn, triết lý của tổ chức với học viên, đối tác, xã hội.</p>
-              <p>Ngọn lửa màu cam đại diện cho từng học viên, thể hiện thông điệp "Bạn có thể nói tiếng Anh như chúng tôi".</p>
-              <p>Màu xanh trong logo tượng trưng cho tin tưởng, trách nhiệm và bình an. Màu cam trong logo đại diện cho sự trẻ trung, sáng tạo.</p>
+              <p>Ngọn lửa màu cam đại diện cho từng học viên, thể hiện thông điệp "Bạn có thể nói tiếng Anh như chúng tôi".Màu xanh trong logo tượng trưng cho tin tưởng, trách nhiệm và bình an. Màu cam trong logo đại diện cho sự trẻ trung, sáng tạo.</p>
             </div>
           </div>
         </div>
@@ -269,45 +267,8 @@
           </div>
         </div>
       </div>
-      <div class="native-images-row">
-        <img src="../../images/2_about/Banner về chúng tôi.png" alt="Banner" class="native-img-card native-img-main" />
-      </div>
+
     </section>
-    
-    <!-- View Section -->
-<section class="view-section">
-  <div class="view-main">
-    
-    <!-- Left content -->
-    <div class="view-card">
-      <h2 class="view-title">Tầm nhìn</h2>
-      <p class="view-desc">
-        Đào tạo hàng triệu học viên Việt Nam nói tiếng Anh như người bản ngữ.
-
-        Trở thành 1 trong top 5 thương hiệu đào tạo ngôn ngữ, đặc biệt là tiếng Anh.
-
-        Trở thành hệ thống được kiểm định khảo thí quốc tế.
-      </p>
-    </div>
-
-    <!-- Middle image
-    <div class="view-middle">
-      <img src="@/images/2_about/Banner về chúng tôi.png" alt="Học viên" />
-    </div> -->
-
-    <!-- Right content -->
-    <div class="view-card">
-      <h2 class="view-title">Sứ mệnh</h2>
-      <p class="view-desc">
-        Giúp học viên phát triển toàn diện, tự tin vươn ra thế giới, hiện thực
-        khát vọng, cống hiến cho xã hội, đất nước Việt Nam.
-      </p>
-    </div>
-
-  </div>
-</section>
-    
-
 
   </div>
 </template>
